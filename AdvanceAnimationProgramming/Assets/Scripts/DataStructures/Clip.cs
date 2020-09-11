@@ -22,7 +22,7 @@ namespace AdvAnimation
         public int lastKeyframe;
 
         /// <summary>
-        /// The duration of this clip
+        /// The duration of the clip
         /// </summary>
         public float Duration
         {
@@ -34,7 +34,9 @@ namespace AdvAnimation
             }
         }
 
-        // this inverse duration of this clip
+        /// <summary>
+        /// The inverse duration of the clip
+        /// </summary>
         public float InverseDuration
         {
             get { return _inverseDuration; }
