@@ -1,44 +1,101 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    Clip.cs - Hold all the data for a clip in an animation
+*/
 
 namespace AdvAnimation
 {
-    public class Clip<T>
+    /// <summary>
+    /// A collection of sequenced data of keyframes
+    /// </summary>
+    public class Clip
     {
-        private string _name;
-        private int _index;
+        private readonly KeyframePool _pool;
         private float _duration;
         private float _inverseDuration;
-        public readonly KeyframePool<T> pool;
 
-        public Keyframe<T> First
+        public string name;
+        public int index;
+        public int firstKeyframe;
+        public int lastKeyframe;
+
+        /// <summary>
+        /// The duration of this clip
+        /// </summary>
+        public float Duration
         {
-            get { return pool.keyframes[0]; }
+            get { return _duration; }
+            set
+            {
+                _duration = value;
+                _inverseDuration = 1 / _duration;
+            }
         }
 
-        public Keyframe<T> Last
+        // this inverse duration of this clip
+        public float InverseDuration
         {
-            get { return pool.keyframes[pool.Count - 1]; }
+            get { return _inverseDuration; }
+            set
+            {
+                _inverseDuration = value;
+                _duration = 1 / _inverseDuration;
+            }
         }
 
-        public Clip(KeyframePool<T> keyframePool)
+
+        /// <summary>
+        /// Create a Clip
+        /// </summary>
+        /// <param name="name">The name of the clip</param>
+        /// <param name="keyframePool">the keyframe pool to be used by this clip</param>
+        /// <param name="firstKey">the first index of the clip</param>
+        /// <param name="lastKey">the last index of the clip (inclusive!)</param>
+        public Clip(string name, KeyframePool keyframePool, int firstKey, int lastKey)
         {
-            pool = keyframePool;
+            this.name = name;
+            index = -1;
+            _pool = keyframePool;
+            
+            firstKeyframe = firstKey;
+            if (firstKeyframe < 0)
+                firstKeyframe = 0;
+            else if (firstKeyframe > _pool.Count - 1)
+                firstKeyframe = _pool.Count - 1;
+            
+            lastKeyframe = lastKey;
+            if (lastKeyframe < 0)
+                lastKeyframe = 0;
+            else if (lastKeyframe > _pool.Count - 1)
+                lastKeyframe = _pool.Count - 1;
+
             CalculateDuration();
         }
 
+        /// <summary>
+        /// Calculate the duration of this clip by summing up all keyframes in the pool from firstKeyframe to lastKeyframe
+        /// </summary>
         private void CalculateDuration()
         {
             float duration = 0;
-            for (int i = 0; i < pool.Count; i++)
+            for (int i = firstKeyframe; i <= lastKeyframe; i++)
             {
-                duration += pool.keyframes[i].Duration;
+                duration += _pool.GetKeyframe(i).Duration;
             }
 
-            _duration = duration;
-            _inverseDuration = 1 / duration;
+            Duration = duration;
+        }
+
+        /// <summary>
+        /// Get a Keyframe
+        /// </summary>
+        /// <param name="i">Index into the array of keyframes</param>
+        /// <returns>the requested keyframe</returns>
+        public Keyframe GetKeyframe(int i)
+        {
+            return _pool.GetKeyframe(i);
         }
     }
-
 }

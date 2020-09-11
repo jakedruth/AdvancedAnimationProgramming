@@ -1,22 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    Keyframe.cs - Hold all the data for a key frame
+*/
 
 namespace AdvAnimation
 {
-    public class Keyframe<T>
+    /// <summary>
+    /// A discrete sample of data lasting a duration of time
+    /// </summary>
+    public class Keyframe
     {
-        private int _index;
+        public int index;
+        public float data;
         private float _duration;
         private float _inverseDuration;
-        private T _data;
 
-        public int Index
-        {
-            get { return _index; }
-            set { _index = value; }
-        }
-
+        /// <summary>
+        /// The duration of this keyframe
+        /// </summary>
         public float Duration
         {
             get { return _duration; }
@@ -27,6 +30,9 @@ namespace AdvAnimation
             }
         }
 
+        /// <summary>
+        /// The inverse duration of this keyframe
+        /// </summary>
         public float InverseDuration
         {
             get { return _inverseDuration; }
@@ -37,17 +43,16 @@ namespace AdvAnimation
             }
         }
 
-        public T Data
+        /// <summary>
+        /// Creates a keyframe
+        /// </summary>
+        /// <param name="duration">How long in seconds the keyframe will last</param>
+        /// <param name="data">The value of this keyframe</param>
+        public Keyframe(float duration, float data)
         {
-            get { return _data; }
-            set { _data = value; }
-        }
-
-        public Keyframe(int index, float duration, T data)
-        {
-            Index = index;
+            index = -1;
             Duration = duration;
-            Data = data;
+            this.data = data;
         }
     }
 }
