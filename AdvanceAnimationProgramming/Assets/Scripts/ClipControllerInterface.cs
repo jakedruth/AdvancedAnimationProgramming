@@ -191,25 +191,30 @@ namespace AdvAnimation
                 frames[i] = new Keyframe(start, end, data);
             }
 
-            KeyframePool poolFloat = new KeyframePool(frames);
+            KeyframePool keyframePool = new KeyframePool(frames);
 
-            ClipPool pool = new ClipPool(new[]
+            ClipPool clipPool = new ClipPool(new[]
             {
-                new Clip("rowA", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowB"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowH")),
-                new Clip("rowB", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowC"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowA")),
-                new Clip("rowC", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowD"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowB")),
-                new Clip("rowD", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowE"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowC")),
-                new Clip("rowE", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowF"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowD")),
-                new Clip("rowF", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowG"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowE")),
-                new Clip("rowG", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowH"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowF")),
-                new Clip("rowH", poolFloat, 0, 7, new Transition(TransitionType.FORWARD_PLAYBACK, "rowA"), new Transition(TransitionType.BACKWARD_PLAYBACK, "rowG")),
+                new Clip("rowA",               keyframePool, 0,  7,  new Transition(TransitionType.FORWARD, "rowB"), new Transition(TransitionType.BACKWARD, "rowH")),
+                new Clip("rowB",               keyframePool, 8,  15, new Transition(TransitionType.FORWARD, "rowC"), new Transition(TransitionType.BACKWARD, "rowA")),
+                new Clip("rowC",               keyframePool, 16, 23, new Transition(TransitionType.FORWARD, "rowD"), new Transition(TransitionType.BACKWARD, "rowB")),
+                new Clip("rowD",               keyframePool, 24, 31, new Transition(TransitionType.FORWARD, "rowE"), new Transition(TransitionType.BACKWARD, "rowC")),
+                new Clip("rowE",               keyframePool, 32, 39, new Transition(TransitionType.FORWARD, "rowF"), new Transition(TransitionType.BACKWARD, "rowD")),
+                new Clip("rowF",               keyframePool, 40, 47, new Transition(TransitionType.FORWARD, "rowG"), new Transition(TransitionType.BACKWARD, "rowE")),
+                new Clip("rowG",               keyframePool, 48, 55, new Transition(TransitionType.FORWARD, "rowH"), new Transition(TransitionType.BACKWARD, "rowF")),
+                new Clip("rowH",               keyframePool, 56, 63, new Transition(TransitionType.FORWARD, "rowA"), new Transition(TransitionType.BACKWARD, "rowG")),
+                new Clip("PingPongSkipRowA",   keyframePool, 0,  7,  new Transition(TransitionType.BACKWARD_SKIP),   new Transition(TransitionType.FORWARD_SKIP)), 
+                new Clip("PingPongNoSkipRowB", keyframePool, 8,  15, new Transition(TransitionType.BACKWARD),        new Transition(TransitionType.FORWARD)), 
+                new Clip("all",                keyframePool, 0,  63, new Transition(TransitionType.FORWARD),         new Transition(TransitionType.BACKWARD)), 
+                new Clip("rowA_ping_f",        keyframePool, 0,  7,  new Transition(TransitionType.BACKWARD, "rowA_pong_r"), new Transition(TransitionType.PAUSE)), 
+                new Clip("rowA_pong_r",        keyframePool, 0,  6,  new Transition(TransitionType.BACKWARD, "rowA_ping_f"), new Transition(TransitionType.PAUSE)),
             });
 
             controllers = new[]
             {
-                new ClipController("Controller A", pool, 0),
-                new ClipController("Controller B", pool, 0),
-                new ClipController("Controller C", pool, 0),
+                new ClipController("Controller A", clipPool, "rowA_ping_f"),
+                new ClipController("Controller B", clipPool, 0),
+                new ClipController("Controller C", clipPool, 0),
             };
 
             // set the current controller to the first one, Controller A

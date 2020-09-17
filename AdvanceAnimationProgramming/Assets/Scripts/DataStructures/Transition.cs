@@ -12,9 +12,9 @@ namespace AdvAnimation
     public enum TransitionType
     {
         PAUSE,                  // Pause on current clip
-        FORWARD_PLAYBACK,       // Play from the start of the first frame of the supplied clip
+        FORWARD,                // Play from the start of the first frame of the supplied clip
         FORWARD_PAUSE,          // Pause at start of the first frame of the supplied clip
-        BACKWARD_PLAYBACK,      // Rewind from end of the last frame of the supplied clip
+        BACKWARD,               // Rewind from end of the last frame of the supplied clip
         BACKWARD_PAUSE,         // Pause at end of the last frame of the supplied clip
         FORWARD_SKIP,           // Play from end of the first frame of the supplied clip
         FORWARD_SKIP_PAUSE,     // Pause at the end of the first frame of supplied clip
@@ -37,7 +37,7 @@ namespace AdvAnimation
             ref float keyframeTime, ref PlaybackDirection playbackDirection)
         {
             Clip nextClip = null;
-            if (string.IsNullOrEmpty(transitionClipName))
+            if (!string.IsNullOrEmpty(transitionClipName))
             {
                 int i = pool.GetClipIndexByName(transitionClipName);
                 if (i >= 0)
@@ -75,21 +75,21 @@ namespace AdvAnimation
 
                     playbackDirection = PlaybackDirection.PAUSE;
                     break;
-                case TransitionType.FORWARD_PLAYBACK:
+                case TransitionType.FORWARD:
                 case TransitionType.FORWARD_PAUSE:
                     clipIndex = nextClip.index;
                     keyframeIndex = nextClip.firstKeyframe;
                     keyframeTime = deltaOutOfBounds;
-                    playbackDirection = (transitionType == TransitionType.FORWARD_PLAYBACK)
+                    playbackDirection = (transitionType == TransitionType.FORWARD)
                         ? PlaybackDirection.FORWARD
                         : PlaybackDirection.PAUSE;
                     break;
                 case TransitionType.BACKWARD_PAUSE:
-                case TransitionType.BACKWARD_PLAYBACK:
+                case TransitionType.BACKWARD:
                     clipIndex = nextClip.index;
                     keyframeIndex = nextClip.lastKeyframe;
                     keyframeTime = nextClip[keyframeIndex].Duration - deltaOutOfBounds;
-                    playbackDirection = (transitionType == TransitionType.BACKWARD_PLAYBACK)
+                    playbackDirection = (transitionType == TransitionType.BACKWARD)
                         ? PlaybackDirection.REVERSE
                         : PlaybackDirection.PAUSE;
                     break;
@@ -106,7 +106,7 @@ namespace AdvAnimation
                 case TransitionType.BACKWARD_SKIP_PAUSE:
                     clipIndex = nextClip.index;
                     keyframeIndex = nextClip.lastKeyframe - 1;
-                    keyframeTime = nextClip.Duration - deltaOutOfBounds;
+                    keyframeTime = nextClip[keyframeIndex].Duration - deltaOutOfBounds;
                     playbackDirection = (transitionType == TransitionType.BACKWARD_SKIP)
                         ? PlaybackDirection.REVERSE
                         : PlaybackDirection.PAUSE;
