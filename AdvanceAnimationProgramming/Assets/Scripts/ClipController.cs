@@ -115,7 +115,7 @@ namespace AdvAnimation
             }
 
             keyframeParameter = keyframeTime / clipPool[clipIndex][keyframeIndex].Duration;
-            clipTime = clipPool[clipIndex][keyframeIndex].time + keyframeTime;
+            clipTime = clipPool[clipIndex][keyframeIndex].time - clipPool[clipIndex][clipPool[clipIndex].firstKeyframe].time + keyframeTime;
             clipParameter = clipTime / clipPool[clipIndex].Duration;
         }
 
@@ -144,7 +144,7 @@ namespace AdvAnimation
         public void SetCurrentClip(int i)
         {
             clipIndex = i;
-            clipTime = 0;
+            keyframeIndex = clipPool[clipIndex].firstKeyframe;
             keyframeTime = 0;
         }
 

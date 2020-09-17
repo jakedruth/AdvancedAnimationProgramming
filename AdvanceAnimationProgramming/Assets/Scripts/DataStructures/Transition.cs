@@ -38,6 +38,8 @@ namespace AdvAnimation
         {
             Clip nextClip = transitionClip ?? pool[clipIndex];
 
+            float deltaOutOfBounds = Math.Abs(keyframeTime);
+
             switch (transitionType)
             {
                 case TransitionType.PAUSE:
@@ -61,10 +63,18 @@ namespace AdvAnimation
                     playbackDirection = PlaybackDirection.PAUSE;
                     break;
                 case TransitionType.FORWARD_PLAYBACK:
+                    clipIndex = nextClip.index;
+                    keyframeIndex = nextClip.firstKeyframe;
+                    keyframeTime = deltaOutOfBounds;
+                    playbackDirection = PlaybackDirection.FORWARD;
                     break;
                 case TransitionType.FORWARD_PAUSE:
                     break;
                 case TransitionType.BACKWARD_PLAYBACK:
+                    clipIndex = nextClip.index;
+                    keyframeIndex = nextClip.lastKeyframe;
+                    keyframeTime = nextClip[keyframeIndex].Duration - deltaOutOfBounds;
+                    playbackDirection = PlaybackDirection.REVERSE;
                     break;
                 case TransitionType.BACKWARD_PAUSE:
                     break;

@@ -182,12 +182,14 @@ namespace AdvAnimation
             KeyframePool poolFloat = new KeyframePool(frames);
 
             Transition pauseTransition = new Transition(TransitionType.PAUSE);
+            Transition playBegin = new Transition(TransitionType.FORWARD_PLAYBACK);
+            Transition playEnd = new Transition(TransitionType.BACKWARD_PLAYBACK);
 
-            Clip clipA = new Clip("Idle",   poolFloat, 0,  3,  pauseTransition, pauseTransition);
-            Clip clipB = new Clip("Walk",   poolFloat, 5,  9,  pauseTransition, pauseTransition);
-            Clip clipC = new Clip("Run",    poolFloat, 10, 14, pauseTransition, pauseTransition);
-            Clip clipD = new Clip("Jump",   poolFloat, 15, 19, pauseTransition, pauseTransition);
-            Clip clipE = new Clip("Crouch", poolFloat, 20, 24, pauseTransition, pauseTransition);
+            Clip clipA = new Clip("Idle",   poolFloat, 0,  1,  playBegin, playEnd);
+            Clip clipB = new Clip("Walk",   poolFloat, 5,  9,  playBegin, pauseTransition);
+            Clip clipC = new Clip("Run",    poolFloat, 10, 14, playBegin, pauseTransition);
+            Clip clipD = new Clip("Jump",   poolFloat, 15, 19, playBegin, pauseTransition);
+            Clip clipE = new Clip("Crouch", poolFloat, 20, 24, playBegin, pauseTransition);
 
             // create multiple pools for multiple controllers
             ClipPool clipPool = new ClipPool(clipA, clipB, clipC, clipD, clipE);
