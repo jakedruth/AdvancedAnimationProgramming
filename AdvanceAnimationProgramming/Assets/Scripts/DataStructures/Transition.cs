@@ -24,18 +24,20 @@ namespace AdvAnimation
 
     public class Transition
     {
-        public Clip transitionClip;
         public TransitionType transitionType;
+        public Clip transitionClip;
 
-        public Transition(Clip clip, TransitionType type)
+        public Transition(TransitionType type, Clip clip = null)
         {
-            transitionClip = clip;
             transitionType = type;
+            transitionClip = clip;
         }
 
         public void HandleTransition(ClipPool pool, ref int clipIndex, ref int keyframeIndex, 
             ref float keyframeTime, ref PlaybackDirection playbackDirection)
         {
+            Clip nextClip = transitionClip ?? pool[clipIndex];
+
             switch (transitionType)
             {
                 case TransitionType.PAUSE:
@@ -43,11 +45,11 @@ namespace AdvAnimation
                     switch (playbackDirection)
                     {
                         case PlaybackDirection.FORWARD:
-                            keyframeIndex = pool[clipIndex].lastKeyframe;
-                            keyframeTime = pool[clipIndex][keyframeIndex].Duration;
+                            keyframeIndex = nextClip.lastKeyframe;
+                            keyframeTime = nextClip[keyframeIndex].Duration;
                             break;
                         case PlaybackDirection.REVERSE:
-                            keyframeIndex = pool[clipIndex].firstKeyframe;
+                            keyframeIndex = nextClip.firstKeyframe;
                             keyframeTime = 0;
                             break;
                         case PlaybackDirection.PAUSE:
