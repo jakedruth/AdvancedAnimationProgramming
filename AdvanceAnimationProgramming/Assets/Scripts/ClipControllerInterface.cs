@@ -181,7 +181,7 @@ namespace AdvAnimation
 
             KeyframePool poolFloat = new KeyframePool(frames);
 
-            Transition pauseTransition = new Transition(null, TransitionType.PAUSE);
+            Transition pauseTransition = new Transition(TransitionType.PAUSE);
 
             Clip clipA = new Clip("Idle",   poolFloat, 0,  3,  pauseTransition, pauseTransition);
             Clip clipB = new Clip("Walk",   poolFloat, 5,  9,  pauseTransition, pauseTransition);
