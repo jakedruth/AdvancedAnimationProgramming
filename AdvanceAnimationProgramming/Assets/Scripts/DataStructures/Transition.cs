@@ -25,18 +25,30 @@ namespace AdvAnimation
     public class Transition
     {
         public TransitionType transitionType;
-        public Clip transitionClip;
+        public string transitionClipName;
 
-        public Transition(TransitionType type, Clip clip = null)
+        public Transition(TransitionType type, string clip = null)
         {
             transitionType = type;
-            transitionClip = clip;
+            transitionClipName = clip;
         }
 
         public void HandleTransition(ClipPool pool, ref int clipIndex, ref int keyframeIndex, 
             ref float keyframeTime, ref PlaybackDirection playbackDirection)
         {
-            Clip nextClip = transitionClip ?? pool[clipIndex];
+            Clip nextClip = null;
+            if (string.IsNullOrEmpty(transitionClipName))
+            {
+                int i = pool.GetClipIndexByName(transitionClipName);
+                if (i >= 0)
+                {
+                    nextClip = pool[i];
+                }
+            }
+
+            if (nextClip == null)
+                nextClip = pool[clipIndex];
+
             float deltaOutOfBounds = Math.Abs(keyframeTime);
 
             // TODO: separate all the pauses from there non-pause counterparts
