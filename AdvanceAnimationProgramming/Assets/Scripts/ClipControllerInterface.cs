@@ -43,7 +43,7 @@ namespace AdvAnimation
             const int rowHeight = 20;
 
             int width = 400;
-            int height = 300;
+            int height = 400;
             if (!displayGUIControls)
             {
                 width = 210;
@@ -125,20 +125,27 @@ namespace AdvAnimation
             }
             GUI.Label(currentClipLabel, $"Change Current Clip");
 
-            // Display all value about the current clip
+            // Display all info about the current clip
             Rect clipTimeLabel = new Rect(margin + padding, currentClipLabel.yMax + padding, 500, rowHeight * 4);
             GUI.Label(clipTimeLabel, $"Current Clip:\t[{current.clipIndex}]: '{current.GetCurrentClip().name}'\n" +
                                      $"Clip Duration:\t{current.GetCurrentClip().Duration:00.000}\n" +
                                      $"Clip Time:\t\t{current.clipTime:00.000}\n" +
                                      $"Clip Parameter:\t{current.clipParameter:0.000}");
 
-            // Display all value about the current keyframe
+            // Display all info about the current keyframe
             Rect keyframeTimeLabel = new Rect(margin + padding, clipTimeLabel.yMax + padding, 500, rowHeight * 4);
             GUI.Label(keyframeTimeLabel, $"Current keyframe:\t[{current.GetCurrentKeyframe().index:00.}]\n" +
-                                         $"Data:\t\t{current.GetCurrentKeyframe().value}\n" +
+                                         $"Value:\t\t{current.GetCurrentKeyframe().value}\n" +
                                          $"Keyframe Duration:\t{current.GetCurrentKeyframe().Duration:0.000}\n" +
                                          $"Keyframe Time:\t{current.keyframeTime:0.000}\n" +
                                          $"Keyframe Parameter:\t{current.keyframeParameter:0.000}");
+
+            Rect evaluateRect = new Rect(margin + padding, keyframeTimeLabel.yMax + padding, 500, rowHeight * 4);
+            GUI.Label(evaluateRect, "Evaluations\n" +
+                                    $" - Step:\t\t{current.Evaluate(ClipController.EvaluationType.STEP)}\n" +
+                                    $" - Nearest:\t\t{current.Evaluate(ClipController.EvaluationType.NEAREST)}\n" +
+                                    $" - Lerp:\t\t{current.Evaluate(ClipController.EvaluationType.LERP)}\n" +
+                                    $" - Catmull-Rom:\t{current.Evaluate(ClipController.EvaluationType.CATMULL_ROM)}");
         }
 
         /// <summary>
@@ -158,7 +165,7 @@ namespace AdvAnimation
         private void GenerateTestingData()
         {
             const int numKeyframes = 25;
-            const float deltaTime = 0.5f;
+            const float deltaTime = 2f;
 
             Keyframe[] frames = new Keyframe[numKeyframes];
             
@@ -167,27 +174,29 @@ namespace AdvAnimation
                 float start = i * deltaTime;
                 float end = (i + 1) * deltaTime;
 
-                frames[i] = new Keyframe(start, end, Random.Range(-5f, 5f));
+                float data = (i % 2 == 0) ? 0f : 10f;
+
+                frames[i] = new Keyframe(start, end, data);
             }
 
             KeyframePool poolFloat = new KeyframePool(frames);
 
-            Clip clipA = new Clip("Idle",   poolFloat, 0,  4);
-            Clip clipB = new Clip("Walk",   poolFloat, 5,  9);
-            Clip clipC = new Clip("Run",    poolFloat, 10, 14);
-            Clip clipD = new Clip("Jump",   poolFloat, 15, 19);
-            Clip clipE = new Clip("Crouch", poolFloat, 20, 24);
+            Transition pauseTransition = new Transition(null, TransitionType.PAUSE);
+
+            Clip clipA = new Clip("Idle",   poolFloat, 0,  3,  pauseTransition, pauseTransition);
+            Clip clipB = new Clip("Walk",   poolFloat, 5,  9,  pauseTransition, pauseTransition);
+            Clip clipC = new Clip("Run",    poolFloat, 10, 14, pauseTransition, pauseTransition);
+            Clip clipD = new Clip("Jump",   poolFloat, 15, 19, pauseTransition, pauseTransition);
+            Clip clipE = new Clip("Crouch", poolFloat, 20, 24, pauseTransition, pauseTransition);
 
             // create multiple pools for multiple controllers
-            ClipPool poolA = new ClipPool(clipA, clipB, clipC);
-            ClipPool poolB = new ClipPool(clipB, clipC, clipD);
-            ClipPool poolC = new ClipPool(clipC, clipD, clipE);
+            ClipPool clipPool = new ClipPool(clipA, clipB, clipC, clipD, clipE);
 
             controllers = new[]
             {
-                new ClipController("Controller A", poolA, 0),       // Can set the starting clip by index,
-                new ClipController("Controller B", poolB, "Run"),   // Or by name
-                new ClipController("Controller C", poolC, 1),
+                new ClipController("Controller A", clipPool, 0),       // Can set the starting clip by index,
+                new ClipController("Controller B", clipPool, "Run"),   // Or by name
+                new ClipController("Controller C", clipPool, 4),
             };
 
             // set the current controller to the first one, Controller A

@@ -21,6 +21,9 @@ namespace AdvAnimation
         public int firstKeyframe;
         public int lastKeyframe;
 
+        public Transition forwardTransition;
+        public Transition backwardTransition;
+
         /// <summary>
         /// The duration of the clip
         /// </summary>
@@ -55,7 +58,10 @@ namespace AdvAnimation
         /// <param name="keyframePool">the keyframe pool to be used by this clip</param>
         /// <param name="firstKey">the first index of the clip</param>
         /// <param name="lastKey">the last index of the clip (inclusive!)</param>
-        public Clip(string name, KeyframePool keyframePool, int firstKey, int lastKey)
+        /// <param name="forward">Transition if moving forwards</param>
+        /// <param name="backward">Transition if moving backwards</param>
+        public Clip(string name, KeyframePool keyframePool, int firstKey, int lastKey,
+            Transition forward, Transition backward)
         {
             this.name = name;
             index = -1;
@@ -72,6 +78,9 @@ namespace AdvAnimation
                 lastKeyframe = 0;
             else if (lastKeyframe > _pool.Count - 1)
                 lastKeyframe = _pool.Count - 1;
+
+            forwardTransition = forward;
+            backwardTransition = backward;
 
             _duration = _inverseDuration = 1; // all fields must be assigned to before calling a function
 

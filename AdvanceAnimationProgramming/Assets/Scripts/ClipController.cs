@@ -5,6 +5,8 @@
     ClipController.cs - Controls a group of clips
 */
 
+using System;
+
 namespace AdvAnimation
 {
     /// <summary>
@@ -89,7 +91,8 @@ namespace AdvAnimation
                     if (keyframeIndex > clipPool[clipIndex].lastKeyframe)
                     {
                         // TODO: Handle transition forwards
-                        keyframeIndex = clipPool[clipIndex].firstKeyframe;
+                        clipPool[clipIndex].forwardTransition.HandleTransition(clipPool,
+                            ref clipIndex, ref keyframeIndex, ref keyframeTime, ref playback);
                     }
                 }
             }
@@ -101,65 +104,19 @@ namespace AdvAnimation
                     if (keyframeIndex < clipPool[clipIndex].firstKeyframe)
                     {
                         // TODO: Handle transition backwards
-                        keyframeIndex = clipPool[clipIndex].lastKeyframe;
+                        clipPool[clipIndex].backwardTransition.HandleTransition(clipPool,
+                            ref clipIndex, ref keyframeIndex, ref keyframeTime, ref playback);
                     }
-
-                    keyframeTime = clipPool[clipIndex][keyframeIndex].Duration - keyframeTime;
+                    else
+                    {
+                        keyframeTime = clipPool[clipIndex][keyframeIndex].Duration - keyframeTime;
+                    }
                 }
             }
 
             keyframeParameter = keyframeTime / clipPool[clipIndex][keyframeIndex].Duration;
             clipTime = clipPool[clipIndex][keyframeIndex].time + keyframeTime;
             clipParameter = clipTime / clipPool[clipIndex].Duration;
-
-            //clipTime += increment;
-            //keyframeTime += increment;
-
-            //// get the current clip and keyframe
-            //Clip currentClip = GetCurrentClip();
-            //Keyframe currentKeyframe = GetCurrentKeyframe();
-
-            //if (playback == PlaybackDirection.FORWARD)
-            //{
-            //    // handle if the keyframe time has gone past it's duration
-            //    if (keyframeTime >= currentKeyframe.Duration)
-            //    {
-            //        keyframeTime -= currentKeyframe.Duration;
-            //        keyframeIndex++;
-
-            //        // if the keyframe has gone past the last keyframe
-            //        if (keyframeIndex > currentClip.lastKeyframe)
-            //        {
-            //            // loop back to the begging of the clip and adjust clip time
-            //            keyframeIndex = currentClip.firstKeyframe;
-            //            clipTime = keyframeTime;
-            //        }
-            //    }
-            //}
-            //else if (playback == PlaybackDirection.REVERSE)
-            //{
-            //    // handle if the keyframe time has gone below 0
-            //    if (keyframeTime < 0)
-            //    {
-            //        float delta = -keyframeParameter;
-            //        keyframeIndex--;
-
-            //        // if the keyframe has gone past the first keyframe
-            //        if (keyframeIndex < currentClip.firstKeyframe)
-            //        {
-            //            // loop back to the end of the clip and adjust the clip time
-            //            keyframeIndex = currentClip.lastKeyframe;
-            //            clipTime = GetCurrentClip().Duration - delta;
-            //        }
-
-            //        // adjust keyframe time last, so the duration can be set based on the new keyframes duration
-            //        keyframeTime = GetCurrentKeyframe().Duration - delta;
-            //    }
-            //}
-
-            //// normalize clip time and keyframe time
-            //clipParameter = clipTime / GetCurrentClip().Duration;
-            //keyframeParameter = keyframeTime / GetCurrentKeyframe().Duration;
         }
 
         /// <summary>
@@ -191,6 +148,15 @@ namespace AdvAnimation
             keyframeTime = 0;
         }
 
+        /// <summary>
+        /// Set the current clip by name
+        /// </summary>
+        /// <param name="clipName">The Clip name</param>
+        public void SetCurrentClip(string clipName)
+        {
+            SetCurrentClip(clipPool.GetClipIndexByName(clipName));
+        }
+
         public void GoToNextClip()
         {
             int index = clipIndex + 1;
@@ -209,18 +175,90 @@ namespace AdvAnimation
             SetCurrentClip(index);
         }
 
-        /// <summary>
-        /// Set the current clip by name
-        /// </summary>
-        /// <param name="clipName">The Clip name</param>
-        public void SetCurrentClip(string clipName)
+        public enum EvaluationType
         {
-            SetCurrentClip(clipPool.GetClipIndexByName(clipName));
+            STEP,
+            NEAREST,
+            LERP,
+            CATMULL_ROM,
+            CUBIC
         }
 
-        public float Evaluate()
+        public float Evaluate(EvaluationType evaluationType = EvaluationType.STEP)
         {
-            return clipPool[clipIndex][keyframeIndex].value;
+            //TODO: Fix once transitions are implemented
+            //      Getting the next and previous keyframe value will change if
+            //      there is a transition to another clip.... OR the start of 
+            //      this clip............
+
+            switch (evaluationType)
+            {
+                case EvaluationType.CUBIC:       // Not implemented yet
+                case EvaluationType.STEP:
+                    return clipPool[clipIndex][keyframeIndex].value;
+                case EvaluationType.NEAREST:
+                {
+                    int k0 = keyframeIndex;
+                    int k1 = keyframeIndex + 1;
+                    if (k1 > clipPool[clipIndex].lastKeyframe)
+                        k1 = clipPool[clipIndex].firstKeyframe;
+
+                    int k = keyframeParameter < 0.5f ? k0 : k1;
+
+                    return clipPool[clipIndex][k].value;
+                }
+                case EvaluationType.LERP:
+                {
+                    int k0 = keyframeIndex;
+                    int k1 = keyframeIndex + 1;
+                    if (k1 > clipPool[clipIndex].lastKeyframe)
+                        k1 = clipPool[clipIndex].firstKeyframe;
+
+                    float v0 = clipPool[clipIndex][k0].value;
+                    float v1 = clipPool[clipIndex][k1].value;
+
+                    return (v0 + (v1 - v0) * keyframeParameter);
+                }
+                case EvaluationType.CATMULL_ROM:
+                {
+                    int k0 = keyframeIndex;
+                    int k1 = keyframeIndex + 1;
+                    
+                    if (k1 > clipPool[clipIndex].lastKeyframe)
+                        k1 = clipPool[clipIndex].firstKeyframe;
+                    
+                    int kP = k0 - 1;
+                    int kN = k1 + 1;
+                    
+                    if (kP < 0)
+                        kP = clipPool[clipIndex].lastKeyframe;
+
+                    if (kN > clipPool[clipIndex].lastKeyframe)
+                        kN = clipPool[clipIndex].firstKeyframe;
+
+                    float u = keyframeParameter;
+                    float uu = u * u;
+                    float uuu = uu * u;
+
+                    float qP = -uuu + 2 * uu - u;
+                    float q0 = +3 * uuu - 5 * uu + 2;
+                    float q1 = -3 * uuu + 4 * uu + u;
+                    float qN = uuu - uu;
+
+                    float vP = clipPool[clipIndex][kP].value;
+                    float v0 = clipPool[clipIndex][k0].value;
+                    float v1 = clipPool[clipIndex][k1].value;
+                    float vN = clipPool[clipIndex][kN].value;
+
+                    return (vP * qP + 
+                           v0 * q0 + 
+                           v1 * q1 + 
+                           vN * qN) * 0.5f;
+                }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(evaluationType), evaluationType, null);
+            }
         }
     }
 }
