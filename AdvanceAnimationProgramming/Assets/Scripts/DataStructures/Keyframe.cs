@@ -10,7 +10,7 @@ namespace AdvAnimation
     /// <summary>
     /// A discrete sample of value lasting a duration of time
     /// </summary>
-    public struct Keyframe
+    public class Keyframe
     {
         public float time;
         public float value;
@@ -55,9 +55,7 @@ namespace AdvAnimation
             this.value = value;
             time = start;
 
-            _duration = end - start;
-            _inverseDuration = 1 / _duration;
-            
+            Duration = end - start;
             index = -1;
         }
     }

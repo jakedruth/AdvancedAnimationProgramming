@@ -10,9 +10,9 @@ namespace AdvAnimation
     /// <summary>
     /// A collection of sequenced value of keyframes
     /// </summary>
-    public struct Clip
+    public class Clip
     {
-        private KeyframePool _pool;
+        private readonly KeyframePool _pool;
         private float _duration;
         private float _inverseDuration;
 
