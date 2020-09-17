@@ -37,8 +37,9 @@ namespace AdvAnimation
             ref float keyframeTime, ref PlaybackDirection playbackDirection)
         {
             Clip nextClip = transitionClip ?? pool[clipIndex];
-
             float deltaOutOfBounds = Math.Abs(keyframeTime);
+
+            // TODO: separate all the pauses from there non-pause counterparts
 
             switch (transitionType)
             {
@@ -63,28 +64,40 @@ namespace AdvAnimation
                     playbackDirection = PlaybackDirection.PAUSE;
                     break;
                 case TransitionType.FORWARD_PLAYBACK:
+                case TransitionType.FORWARD_PAUSE:
                     clipIndex = nextClip.index;
                     keyframeIndex = nextClip.firstKeyframe;
                     keyframeTime = deltaOutOfBounds;
-                    playbackDirection = PlaybackDirection.FORWARD;
+                    playbackDirection = (transitionType == TransitionType.FORWARD_PLAYBACK)
+                        ? PlaybackDirection.FORWARD
+                        : PlaybackDirection.PAUSE;
                     break;
-                case TransitionType.FORWARD_PAUSE:
-                    break;
+                case TransitionType.BACKWARD_PAUSE:
                 case TransitionType.BACKWARD_PLAYBACK:
                     clipIndex = nextClip.index;
                     keyframeIndex = nextClip.lastKeyframe;
                     keyframeTime = nextClip[keyframeIndex].Duration - deltaOutOfBounds;
-                    playbackDirection = PlaybackDirection.REVERSE;
-                    break;
-                case TransitionType.BACKWARD_PAUSE:
+                    playbackDirection = (transitionType == TransitionType.BACKWARD_PLAYBACK)
+                        ? PlaybackDirection.REVERSE
+                        : PlaybackDirection.PAUSE;
                     break;
                 case TransitionType.FORWARD_SKIP:
-                    break;
                 case TransitionType.FORWARD_SKIP_PAUSE:
+                    clipIndex = nextClip.index;
+                    keyframeIndex = nextClip.firstKeyframe + 1;
+                    keyframeTime = deltaOutOfBounds;
+                    playbackDirection = (transitionType == TransitionType.FORWARD_SKIP)
+                        ? PlaybackDirection.FORWARD
+                        : PlaybackDirection.PAUSE;
                     break;
                 case TransitionType.BACKWARD_SKIP:
-                    break;
                 case TransitionType.BACKWARD_SKIP_PAUSE:
+                    clipIndex = nextClip.index;
+                    keyframeIndex = nextClip.lastKeyframe - 1;
+                    keyframeTime = nextClip.Duration - deltaOutOfBounds;
+                    playbackDirection = (transitionType == TransitionType.BACKWARD_SKIP)
+                        ? PlaybackDirection.REVERSE
+                        : PlaybackDirection.PAUSE;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
