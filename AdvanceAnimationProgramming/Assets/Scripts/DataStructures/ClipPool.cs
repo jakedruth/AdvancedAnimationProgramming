@@ -10,7 +10,7 @@ namespace AdvAnimation
     /// <summary>
     /// A collection of clips
     /// </summary>
-    public class ClipPool
+    public struct ClipPool
     {
         private readonly Clip[] _clips;
 

@@ -11,7 +11,7 @@ namespace AdvAnimation
     /// <summary>
     /// An unordered, unsorted collection of keyframes
     /// </summary>
-    public class KeyframePool
+    public struct KeyframePool
     {
         private readonly Keyframe[] _keyframes;
 

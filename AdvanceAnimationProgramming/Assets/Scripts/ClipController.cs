@@ -17,9 +17,10 @@ namespace AdvAnimation
         FORWARD
     }
 
-    public class ClipController
+    public struct ClipController
     {
         public string name;
+        public ClipPool clipPool;
 
         public int clipIndex;
         public float clipTime;
@@ -29,10 +30,9 @@ namespace AdvAnimation
         public float keyframeTime;
         public float keyframeParameter;
 
-        public PlaybackDirection playback = PlaybackDirection.FORWARD;
-        public float playbackSpeed = 1;
+        public PlaybackDirection playback;
+        public float playbackSpeed;
 
-        public ClipPool clipPool;
 
         /// <summary>
         /// Create a Clip Controller
@@ -44,9 +44,17 @@ namespace AdvAnimation
         {
             this.name = name;
             clipPool = pool;
-            clipIndex = startingClip;
 
-            keyframeIndex = GetCurrentClip().firstKeyframe;
+            clipIndex = startingClip;
+            clipTime = 0;
+            clipParameter = 0;
+            
+            keyframeIndex = clipPool.GetClip(clipIndex).firstKeyframe;
+            keyframeTime = 0;
+            keyframeParameter = 0;
+
+            playback = PlaybackDirection.FORWARD;
+            playbackSpeed = 1;
         }
 
         /// <summary>

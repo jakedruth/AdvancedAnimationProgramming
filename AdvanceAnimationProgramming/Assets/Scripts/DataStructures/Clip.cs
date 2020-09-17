@@ -10,7 +10,7 @@ namespace AdvAnimation
     /// <summary>
     /// A collection of sequenced data of keyframes
     /// </summary>
-    public class Clip
+    public struct Clip
     {
         private readonly KeyframePool _pool;
         private float _duration;
