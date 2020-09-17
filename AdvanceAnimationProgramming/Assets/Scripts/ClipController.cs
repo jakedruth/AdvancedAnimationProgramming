@@ -17,7 +17,7 @@ namespace AdvAnimation
         FORWARD
     }
 
-    public struct ClipController
+    public class ClipController
     {
         public string name;
         public ClipPool clipPool;
@@ -77,54 +77,89 @@ namespace AdvAnimation
 
             // increment both clip time and keyframe time
             float increment = deltaTime * playbackSpeed * (int)playback;
-            clipTime += increment;
             keyframeTime += increment;
-
-            // get the current clip and keyframe
-            Clip currentClip = GetCurrentClip();
-            Keyframe currentKeyframe = GetCurrentKeyframe();
 
             if (playback == PlaybackDirection.FORWARD)
             {
-                // handle if the keyframe time has gone past it's duration
-                if (keyframeTime >= currentKeyframe.Duration)
+                if (keyframeTime >= clipPool[clipIndex][keyframeIndex].Duration)
                 {
-                    keyframeTime -= currentKeyframe.Duration;
+                    keyframeTime -= clipPool[clipIndex][keyframeIndex].Duration;
                     keyframeIndex++;
 
-                    // if the keyframe has gone past the last keyframe
-                    if (keyframeIndex > currentClip.lastKeyframe)
+                    if (keyframeIndex > clipPool[clipIndex].lastKeyframe)
                     {
-                        // loop back to the begging of the clip and adjust clip time
-                        keyframeIndex = currentClip.firstKeyframe;
-                        clipTime = keyframeTime;
+                        // TODO: Handle transition forwards
+                        keyframeIndex = clipPool[clipIndex].firstKeyframe;
                     }
                 }
             }
             else if (playback == PlaybackDirection.REVERSE)
             {
-                // handle if the keyframe time has gone below 0
                 if (keyframeTime < 0)
                 {
-                    float delta = -keyframeParameter;
                     keyframeIndex--;
-
-                    // if the keyframe has gone past the first keyframe
-                    if (keyframeIndex < currentClip.firstKeyframe)
+                    if (keyframeIndex < clipPool[clipIndex].firstKeyframe)
                     {
-                        // loop back to the end of the clip and adjust the clip time
-                        keyframeIndex = currentClip.lastKeyframe;
-                        clipTime = GetCurrentClip().Duration - delta;
+                        // TODO: Handle transition backwards
+                        keyframeIndex = clipPool[clipIndex].lastKeyframe;
                     }
 
-                    // adjust keyframe time last, so the duration can be set based on the new keyframes duration
-                    keyframeTime = GetCurrentKeyframe().Duration - delta;
+                    keyframeTime = clipPool[clipIndex][keyframeIndex].Duration - keyframeTime;
                 }
             }
 
-            // normalize clip time and keyframe time
-            clipParameter = clipTime / GetCurrentClip().Duration;
-            keyframeParameter = keyframeTime / GetCurrentKeyframe().Duration;
+            keyframeParameter = keyframeTime / clipPool[clipIndex][keyframeIndex].Duration;
+            clipTime = clipPool[clipIndex][keyframeIndex].time + keyframeTime;
+            clipParameter = clipTime / clipPool[clipIndex].Duration;
+
+            //clipTime += increment;
+            //keyframeTime += increment;
+
+            //// get the current clip and keyframe
+            //Clip currentClip = GetCurrentClip();
+            //Keyframe currentKeyframe = GetCurrentKeyframe();
+
+            //if (playback == PlaybackDirection.FORWARD)
+            //{
+            //    // handle if the keyframe time has gone past it's duration
+            //    if (keyframeTime >= currentKeyframe.Duration)
+            //    {
+            //        keyframeTime -= currentKeyframe.Duration;
+            //        keyframeIndex++;
+
+            //        // if the keyframe has gone past the last keyframe
+            //        if (keyframeIndex > currentClip.lastKeyframe)
+            //        {
+            //            // loop back to the begging of the clip and adjust clip time
+            //            keyframeIndex = currentClip.firstKeyframe;
+            //            clipTime = keyframeTime;
+            //        }
+            //    }
+            //}
+            //else if (playback == PlaybackDirection.REVERSE)
+            //{
+            //    // handle if the keyframe time has gone below 0
+            //    if (keyframeTime < 0)
+            //    {
+            //        float delta = -keyframeParameter;
+            //        keyframeIndex--;
+
+            //        // if the keyframe has gone past the first keyframe
+            //        if (keyframeIndex < currentClip.firstKeyframe)
+            //        {
+            //            // loop back to the end of the clip and adjust the clip time
+            //            keyframeIndex = currentClip.lastKeyframe;
+            //            clipTime = GetCurrentClip().Duration - delta;
+            //        }
+
+            //        // adjust keyframe time last, so the duration can be set based on the new keyframes duration
+            //        keyframeTime = GetCurrentKeyframe().Duration - delta;
+            //    }
+            //}
+
+            //// normalize clip time and keyframe time
+            //clipParameter = clipTime / GetCurrentClip().Duration;
+            //keyframeParameter = keyframeTime / GetCurrentKeyframe().Duration;
         }
 
         /// <summary>
@@ -156,6 +191,24 @@ namespace AdvAnimation
             keyframeTime = 0;
         }
 
+        public void GoToNextClip()
+        {
+            int index = clipIndex + 1;
+            if (index > clipPool.Count - 1)
+                index = 0;
+
+            SetCurrentClip(index);
+        }
+
+        public void GoToPrevClip()
+        {
+            int index = clipIndex - 1;
+            if (index < 0)
+                index = clipPool.Count - 1;
+
+            SetCurrentClip(index);
+        }
+
         /// <summary>
         /// Set the current clip by name
         /// </summary>
@@ -163,6 +216,11 @@ namespace AdvAnimation
         public void SetCurrentClip(string clipName)
         {
             SetCurrentClip(clipPool.GetClipIndexByName(clipName));
+        }
+
+        public float Evaluate()
+        {
+            return clipPool[clipIndex][keyframeIndex].value;
         }
     }
 }

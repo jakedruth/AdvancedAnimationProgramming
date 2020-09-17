@@ -2,18 +2,19 @@
 	Advanced Animation Programming
 	By Jake Ruth
 
-    Keyframe.cs - Hold all the data for a key frame
+    Keyframe.cs - Hold all the value for a key frame
 */
 
 namespace AdvAnimation
 {
     /// <summary>
-    /// A discrete sample of data lasting a duration of time
+    /// A discrete sample of value lasting a duration of time
     /// </summary>
     public struct Keyframe
     {
+        public float time;
+        public float value;
         public int index;
-        public float data;
         private float _duration;
         private float _inverseDuration;
 
@@ -46,14 +47,18 @@ namespace AdvAnimation
         /// <summary>
         /// Creates a keyframe
         /// </summary>
-        /// <param name="duration">How long in seconds the keyframe will last</param>
-        /// <param name="data">The value of this keyframe</param>
-        public Keyframe(float duration, float data)
+        /// <param name="start">The keyframe start time</param>
+        /// <param name="end">The keyframe end time</param>
+        /// <param name="value">The keyframe value</param>
+        public Keyframe(float start, float end, float value)
         {
-            index = -1;
-            this.data = data;
-            _duration = duration;
+            this.value = value;
+            time = start;
+
+            _duration = end - start;
             _inverseDuration = 1 / _duration;
+            
+            index = -1;
         }
     }
 }

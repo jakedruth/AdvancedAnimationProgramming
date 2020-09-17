@@ -2,13 +2,13 @@
 	Advanced Animation Programming
 	By Jake Ruth
 
-    Clip.cs - Hold all the data for a clip in an animation
+    Clip.cs - Hold all the value for a clip in an animation
 */
 
 namespace AdvAnimation
 {
     /// <summary>
-    /// A collection of sequenced data of keyframes
+    /// A collection of sequenced value of keyframes
     /// </summary>
     public struct Clip
     {
@@ -100,6 +100,12 @@ namespace AdvAnimation
         public Keyframe GetKeyframe(int i)
         {
             return _pool[i];
+        }
+
+        public Keyframe this[int i]
+        {
+            get { return _pool[i]; }
+            set { _pool[i] = value; }
         }
     }
 }

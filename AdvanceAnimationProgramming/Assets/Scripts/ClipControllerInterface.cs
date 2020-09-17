@@ -117,19 +117,11 @@ namespace AdvAnimation
             // If pressed, cycle through the available clips
             if (GUI.Button(previousClipButton, "<"))
             {
-                int index = current.clipIndex - 1;
-                if (index < 0)
-                    index = current.clipPool.Count - 1;
-
-                current.SetCurrentClip(index);
+                current.GoToPrevClip();
             }
             if (GUI.Button(nextClipButton, ">"))
             {
-                int index = current.clipIndex + 1;
-                if (index > current.clipPool.Count - 1)
-                    index = 0;
-
-                current.SetCurrentClip(index);
+                current.GoToNextClip();
             }
             GUI.Label(currentClipLabel, $"Change Current Clip");
 
@@ -165,46 +157,26 @@ namespace AdvAnimation
         /// </summary>
         private void GenerateTestingData()
         {
-            // Create 26 keyframes with a random duration of 0.5, 0.75, 1.0, 1.25, & 1.50
-            // also generate a random float to be the data stored
-            Keyframe frameA = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameB = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameC = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameD = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameE = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameF = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameG = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameH = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameI = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameJ = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameK = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameL = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameM = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameN = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameO = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameP = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameQ = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameR = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameS = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameT = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameU = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameV = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameW = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameY = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameX = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
-            Keyframe frameZ = new Keyframe(0.5f + Random.Range(0, 5) * 0.25f, Random.Range(-10f, 10f));
+            const int numKeyframes = 25;
+            const float deltaTime = 0.5f;
 
-            // Create a keyframe pool to hold all of the frames
-            KeyframePool poolFloat = new KeyframePool(frameA, frameB, frameC, frameD, frameE, frameF,
-                frameG, frameH, frameI, frameJ, frameK, frameL, frameM, frameN, frameO, frameP,
-                frameQ, frameR, frameS, frameT, frameU, frameV, frameW, frameX, frameY, frameZ);
+            Keyframe[] frames = new Keyframe[numKeyframes];
+            
+            for (int i = 0; i < numKeyframes; i++)
+            {
+                float start = i * deltaTime;
+                float end = (i + 1) * deltaTime;
 
-            // generate 5 clips that have some overlapping keyframes
-            Clip clipA = new Clip("Idle",   poolFloat, 0,  13);
-            Clip clipB = new Clip("Walk",   poolFloat, 14, 25);
-            Clip clipC = new Clip("Run",    poolFloat, 0,  25);
-            Clip clipD = new Clip("Jump",   poolFloat, 10, 20);
-            Clip clipE = new Clip("Crouch", poolFloat, 0,  1);
+                frames[i] = new Keyframe(start, end, Random.Range(-5f, 5f));
+            }
+
+            KeyframePool poolFloat = new KeyframePool(frames);
+
+            Clip clipA = new Clip("Idle",   poolFloat, 0,  4);
+            Clip clipB = new Clip("Walk",   poolFloat, 5,  9);
+            Clip clipC = new Clip("Run",    poolFloat, 10, 14);
+            Clip clipD = new Clip("Jump",   poolFloat, 15, 19);
+            Clip clipE = new Clip("Crouch", poolFloat, 20, 24);
 
             // create multiple pools for multiple controllers
             ClipPool poolA = new ClipPool(clipA, clipB, clipC);
