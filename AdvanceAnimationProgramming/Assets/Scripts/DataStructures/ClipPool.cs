@@ -40,7 +40,7 @@ namespace AdvAnimation
         /// </summary>
         /// <param name="i">Index into the array of clip</param>
         /// <returns>The requested clip</returns>
-        public Clip GetClip(int i)
+        private Clip GetClipByIndex(int i)
         {
             return _clips[i];
         }
@@ -50,7 +50,7 @@ namespace AdvAnimation
         /// </summary>
         /// <param name="name">The clip's name</param>
         /// <returns>-1 if no clip with the supplied name. Otherwise, the index of the Clip in the array</returns
-        public int GetClip(string name)
+        public int GetClipIndexByName(string name)
         {
             for (int i = 0; i < Count; i++)
             {
@@ -59,6 +59,18 @@ namespace AdvAnimation
             }
 
             return -1;
+        }
+
+        public Clip this[string name]
+        {
+            get { return _clips[GetClipIndexByName(name)]; }
+            set { _clips[GetClipIndexByName(name)] = value; }
+        }
+
+        public Clip this[int i]
+        {
+            get { return _clips[i]; }
+            set { _clips[i] = value; }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace AdvAnimation
     /// </summary>
     public struct Clip
     {
-        private readonly KeyframePool _pool;
+        private KeyframePool _pool;
         private float _duration;
         private float _inverseDuration;
 
@@ -73,6 +73,8 @@ namespace AdvAnimation
             else if (lastKeyframe > _pool.Count - 1)
                 lastKeyframe = _pool.Count - 1;
 
+            _duration = _inverseDuration = 1; // all fields must be assigned to before calling a function
+
             CalculateDuration();
         }
 
@@ -84,7 +86,7 @@ namespace AdvAnimation
             float duration = 0;
             for (int i = firstKeyframe; i <= lastKeyframe; i++)
             {
-                duration += _pool.GetKeyframe(i).Duration;
+                duration += _pool[i].Duration;
             }
 
             Duration = duration;
@@ -97,7 +99,7 @@ namespace AdvAnimation
         /// <returns>the requested keyframe</returns>
         public Keyframe GetKeyframe(int i)
         {
-            return _pool.GetKeyframe(i);
+            return _pool[i];
         }
     }
 }

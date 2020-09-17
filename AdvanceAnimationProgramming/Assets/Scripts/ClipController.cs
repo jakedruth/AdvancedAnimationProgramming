@@ -49,7 +49,7 @@ namespace AdvAnimation
             clipTime = 0;
             clipParameter = 0;
             
-            keyframeIndex = clipPool.GetClip(clipIndex).firstKeyframe;
+            keyframeIndex = clipPool[clipIndex].firstKeyframe;
             keyframeTime = 0;
             keyframeParameter = 0;
 
@@ -63,7 +63,7 @@ namespace AdvAnimation
         /// <param name="name">The name of the controller</param>
         /// <param name="pool">The pool to reference when animating</param>
         /// <param name="startingClip">The name of the first clip</param>
-        public ClipController(string name, ClipPool pool, string startingClip) : this(name, pool, pool.GetClip(startingClip)) { }
+        public ClipController(string name, ClipPool pool, string startingClip) : this(name, pool, pool.GetClipIndexByName(startingClip)) { }
 
         /// <summary>
         /// Used to update the controller by some amount of time
@@ -133,7 +133,7 @@ namespace AdvAnimation
         /// <returns>The current clip</returns>
         public Clip GetCurrentClip()
         {
-            return clipPool.GetClip(clipIndex);
+            return clipPool[clipIndex];
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace AdvAnimation
         /// <param name="clipName">The Clip name</param>
         public void SetCurrentClip(string clipName)
         {
-            SetCurrentClip(clipPool.GetClip(clipName));
+            SetCurrentClip(clipPool.GetClipIndexByName(clipName));
         }
     }
 }

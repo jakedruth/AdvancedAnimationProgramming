@@ -45,5 +45,11 @@ namespace AdvAnimation
         {
             return _keyframes[i];
         }
+
+        public Keyframe this[int i]
+        {
+            get { return _keyframes[i]; }
+            set { _keyframes[i] = value; }
+        }
     }
 }
