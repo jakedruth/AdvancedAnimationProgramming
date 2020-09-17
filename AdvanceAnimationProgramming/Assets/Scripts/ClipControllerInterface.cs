@@ -22,7 +22,7 @@ namespace AdvAnimation
         /// <summary>
         /// Start is called before the first frame update
         /// </summary>
-        void Start()
+        void Awake()
         {
             GenerateTestingData();
         }
@@ -174,7 +174,7 @@ namespace AdvAnimation
                 float start = i * deltaTime;
                 float end = (i + 1) * deltaTime;
 
-                float data = (i % 2 == 0) ? 0f : 10f;
+                float data = (i % 2 == 0) ? -5f : 5f;
 
                 frames[i] = new Keyframe(start, end, data);
             }
