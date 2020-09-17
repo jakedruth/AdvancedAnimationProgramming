@@ -36,7 +36,7 @@ namespace AdvAnimation
             ClipController current = controllers[_currentClipControllerIndex];
 
             // Most of these numbers were chooses as good enough looking values to render a gui. 
-            // All hard coded values in rects are used as they were large enough to display the respective data (i.e. text and buttons)
+            // All hard coded values in rects are used as they were large enough to display the respective value (i.e. text and buttons)
 
             const int margin = 10;
             const int padding = 5;
@@ -125,17 +125,17 @@ namespace AdvAnimation
             }
             GUI.Label(currentClipLabel, $"Change Current Clip");
 
-            // Display all data about the current clip
+            // Display all value about the current clip
             Rect clipTimeLabel = new Rect(margin + padding, currentClipLabel.yMax + padding, 500, rowHeight * 4);
             GUI.Label(clipTimeLabel, $"Current Clip:\t[{current.clipIndex}]: '{current.GetCurrentClip().name}'\n" +
                                      $"Clip Duration:\t{current.GetCurrentClip().Duration:00.000}\n" +
                                      $"Clip Time:\t\t{current.clipTime:00.000}\n" +
                                      $"Clip Parameter:\t{current.clipParameter:0.000}");
 
-            // Display all data about the current keyframe
+            // Display all value about the current keyframe
             Rect keyframeTimeLabel = new Rect(margin + padding, clipTimeLabel.yMax + padding, 500, rowHeight * 4);
             GUI.Label(keyframeTimeLabel, $"Current keyframe:\t[{current.GetCurrentKeyframe().index:00.}]\n" +
-                                         $"Data:\t\t{current.GetCurrentKeyframe().data}\n" +
+                                         $"Data:\t\t{current.GetCurrentKeyframe().value}\n" +
                                          $"Keyframe Duration:\t{current.GetCurrentKeyframe().Duration:0.000}\n" +
                                          $"Keyframe Time:\t{current.keyframeTime:0.000}\n" +
                                          $"Keyframe Parameter:\t{current.keyframeParameter:0.000}");
@@ -153,7 +153,7 @@ namespace AdvAnimation
         }
 
         /// <summary>
-        /// Used to create random data for testing
+        /// Used to create random value for testing
         /// </summary>
         private void GenerateTestingData()
         {
