@@ -83,37 +83,43 @@ namespace AdvAnimation
 
             if (playback == PlaybackDirection.FORWARD)
             {
+                // handle if the keyframe has gone past it's duration
                 if (keyframeTime >= clipPool[clipIndex][keyframeIndex].Duration)
                 {
                     keyframeTime -= clipPool[clipIndex][keyframeIndex].Duration;
-                    keyframeIndex++;
 
-                    if (keyframeIndex > clipPool[clipIndex].lastKeyframe)
+                    // handle a transition if the last keyframe is active
+                    if (keyframeIndex >=clipPool[clipIndex].lastKeyframe)
                     {
-                        // TODO: Handle transition forwards
                         clipPool[clipIndex].forwardTransition.HandleTransition(clipPool,
                             ref clipIndex, ref keyframeIndex, ref keyframeTime, ref playback);
+                    }
+                    else
+                    {
+                        keyframeIndex++;
                     }
                 }
             }
             else if (playback == PlaybackDirection.REVERSE)
             {
+                // handle if the keyframe has gone below 0s
                 if (keyframeTime < 0)
                 {
-                    keyframeIndex--;
-                    if (keyframeIndex < clipPool[clipIndex].firstKeyframe)
+                    // handle a transition if the first keyframe is active
+                    if (keyframeIndex <= clipPool[clipIndex].firstKeyframe)
                     {
-                        // TODO: Handle transition backwards
                         clipPool[clipIndex].backwardTransition.HandleTransition(clipPool,
                             ref clipIndex, ref keyframeIndex, ref keyframeTime, ref playback);
                     }
                     else
                     {
+                        keyframeIndex--;
                         keyframeTime = clipPool[clipIndex][keyframeIndex].Duration - keyframeTime;
                     }
                 }
             }
 
+            // calculate the parameters
             keyframeParameter = keyframeTime / clipPool[clipIndex][keyframeIndex].Duration;
             clipTime = clipPool[clipIndex][keyframeIndex].time - clipPool[clipIndex][clipPool[clipIndex].firstKeyframe].time + keyframeTime;
             clipParameter = clipTime / clipPool[clipIndex].Duration;

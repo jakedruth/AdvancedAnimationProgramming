@@ -105,17 +105,17 @@ namespace AdvAnimation
                 current.playback = PlaybackDirection.FORWARD;
 
             // Create the rects to hold a playback speed multiplier
-            Rect playbackMultiplierLabel = new Rect(margin + padding, playbackForward.yMax + padding, 180, rowHeight);
+            Rect playbackMultiplierLabel = new Rect(margin + padding, playbackForward.yMax + padding, 190, rowHeight);
             Rect playbackMultiplierSlider = new Rect(playbackMultiplierLabel.xMax + padding,
                 playbackMultiplierLabel.y + 5, width - playbackMultiplierLabel.width - padding * 3, rowHeight);
 
             // Display a label and slider to control the playback speed multiplier from 0 to 2
-            GUI.Label(playbackMultiplierLabel, $"Playback speed multiplier: {current.playbackSpeed:F1}");
+            GUI.Label(playbackMultiplierLabel, $"Playback speed multiplier: {current.playbackSpeed:0.00}");
             current.playbackSpeed =
                 GUI.HorizontalSlider(playbackMultiplierSlider, current.playbackSpeed, 0,
                     2); // a scale of 0 to 2 keeps normal speed in the middle of the slider
             current.playbackSpeed =
-                Mathf.Round(current.playbackSpeed * 10) / 10; // round playback speed to closest tenth
+                Mathf.Round(current.playbackSpeed * 20) / 20; // round playback speed to closest tenth
 
             // Create the rects to hold clip controls
             Rect previousClipButton =
@@ -176,23 +176,27 @@ namespace AdvAnimation
         /// </summary>
         private void GenerateTestingData()
         {
+            // Generate key frames for each cell of a grid that is 8 x 8
             const int numKeyframes = 64;
             const float deltaTime = 0.1f;
 
             Keyframe[] frames = new Keyframe[numKeyframes];
-
             for (int i = 0; i < numKeyframes; i++)
             {
+                // calculate the start and end time of each keyframe
                 float start = i * deltaTime;
                 float end = (i + 1) * deltaTime;
 
+                // store the 1D index of the cell coordinates
                 float data = i;
 
+                // create the new keyframe
                 frames[i] = new Keyframe(start, end, data);
             }
 
             KeyframePool keyframePool = new KeyframePool(frames);
-
+            
+            // Create the clip pool
             ClipPool clipPool = new ClipPool(new[]
             {
                 new Clip("rowA",               keyframePool, 0,  7,  new Transition(TransitionType.FORWARD, "rowB"), new Transition(TransitionType.BACKWARD, "rowH")),
@@ -210,15 +214,32 @@ namespace AdvAnimation
                 new Clip("rowA_pong_r",        keyframePool, 0,  6,  new Transition(TransitionType.BACKWARD, "rowA_ping_f"), new Transition(TransitionType.PAUSE)),
             });
 
+            // Create the controllers
             controllers = new[]
             {
-                new ClipController("Controller A", clipPool, "rowA_ping_f"),
-                new ClipController("Controller B", clipPool, 0),
-                new ClipController("Controller C", clipPool, 0),
+                new ClipController("Controller A", clipPool, "rowA"),
+                new ClipController("Controller B", clipPool, "PingPongSkipRowA"),
+                new ClipController("Controller C", clipPool, "PingPongNoSkipRowB"),
             };
+
+            // manually set the last two controller's speed to half for demo-ing
+            controllers[1].playbackSpeed = controllers[2].playbackSpeed = 0.5f;
 
             // set the current controller to the first one, Controller A
             _currentClipControllerIndex = 0;
+        }
+
+        public ClipController GetClipControllerByName(string controllerName)
+        {
+            //return controllers.FirstOrDefault(controller => controller.name == name);
+
+            for (int i = 0; i < controllers.Length; i++)
+            {
+                if (controllers[i].name == controllerName)
+                    return controllers[i];
+            }
+
+            return null;
         }
     }
 }
