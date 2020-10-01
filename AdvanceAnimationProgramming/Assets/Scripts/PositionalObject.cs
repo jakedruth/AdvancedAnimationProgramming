@@ -27,14 +27,14 @@ public class PositionalObject : MonoBehaviour
         // create the x values
         Keyframe x0 = new Keyframe(0f, 1f, -4f);
         Keyframe x1 = new Keyframe(1f, 2f, -4f);
-        Keyframe x2 = new Keyframe(1f, 2f, +4f);
-        Keyframe x3 = new Keyframe(1f, 2f, +4f);
+        Keyframe x2 = new Keyframe(2f, 3f, +4f);
+        Keyframe x3 = new Keyframe(3f, 4f, +4f);
 
         // create the y values
         Keyframe y0 = new Keyframe(0f, 1f, -4f);
         Keyframe y1 = new Keyframe(1f, 2f, +4f);
-        Keyframe y2 = new Keyframe(1f, 2f, +4f);
-        Keyframe y3 = new Keyframe(1f, 2f, -4f);
+        Keyframe y2 = new Keyframe(2f, 3f, +4f);
+        Keyframe y3 = new Keyframe(3f, 4f, -4f);
 
         // create a pool for each channel
         KeyframePool keyframePoolX = new KeyframePool(x0, x1, x2, x3);

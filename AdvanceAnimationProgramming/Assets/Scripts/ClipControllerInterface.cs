@@ -172,13 +172,13 @@ namespace AdvAnimation
         }
 
         /// <summary>
-        /// Used to create random value for testing
+        /// Used to create values for testing
         /// </summary>
         private void GenerateTestingData()
         {
             // Generate key frames for each cell of a grid that is 8 x 8
             const int numKeyframes = 64;
-            const float deltaTime = 0.1f;
+            const float deltaTime = 0.3f;
 
             Keyframe[] frames = new Keyframe[numKeyframes];
             for (int i = 0; i < numKeyframes; i++)
@@ -217,13 +217,16 @@ namespace AdvAnimation
             // Create the controllers
             controllers = new[]
             {
-                new ClipController("Controller A", clipPool, "rowA"),
-                new ClipController("Controller B", clipPool, "PingPongSkipRowA"),
-                new ClipController("Controller C", clipPool, "PingPongNoSkipRowB"),
+                new ClipController("Controller A", clipPool, "PingPongSkipRowA"),
+                new ClipController("Controller B", clipPool, "PingPongNoSkipRowB"),
+                new ClipController("Controller C", clipPool, "rowA"),
             };
 
-            // manually set the last two controller's speed to half for demo-ing
-            controllers[1].playbackSpeed = controllers[2].playbackSpeed = 0.5f;
+            // manually set the first two controller's speed to half for demo-ing
+            controllers[0].playbackSpeed = controllers[1].playbackSpeed = 0.5f;
+
+            // Manually set the last controller to paused for demo-ing
+            controllers[2].playback = PlaybackDirection.PAUSE;
 
             // set the current controller to the first one, Controller A
             _currentClipControllerIndex = 0;
