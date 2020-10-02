@@ -2,7 +2,7 @@
 	Advanced Animation Programming
 	By Jake Ruth
 
-    hierarchicalPosePool.cs - A pool or group of hierarchical poses and their individual node poses.
+    hierarchicalState.cs - The complete pose information for a given hierarchy. 
 */
 
 namespace AdvAnimation

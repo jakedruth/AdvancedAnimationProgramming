@@ -24,14 +24,11 @@ namespace AdvAnimation
             _nodes.AddRange(nodes);
         }
 
-        public void AddNode(HierarchyNode node)
+        public int AddNode(string name, int parentIndex)
         {
+            HierarchyNode node = new HierarchyNode(name, Count, parentIndex);
             _nodes.Add(node);
-        }
-
-        public void AddNode(string name, int index, int parentIndex)
-        {
-            AddNode(new HierarchyNode(name, index, parentIndex));
+            return node.index;
         }
 
         public HierarchyNode this[int i]
