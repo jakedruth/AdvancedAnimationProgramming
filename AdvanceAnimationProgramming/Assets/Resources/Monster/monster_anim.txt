@@ -1,0 +1,16 @@
+#----------------------------------------
+# animal3D by D. Buckstein
+# Animation Clip Set File Format
+#----------------------------------------
+
+# Animations for four-armed monster
+
+# number of animations
+@4
+
+# animations
+# @ clip_name	first_frame	last_frame	duration_s	reverse_transition	forward_transition	comments (ignored)                                   
+@tpose			0			0			0.0			stop				stop
+@calib			1			27			1.0			stop>tpose			stop>tpose
+@idle			28			52			4.0			play<<				play>
+@dance			54			78			1.5			play<<				play>

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace AdvAnimation
 {
-    class SpacialPose
+    public class SpacialPose
     {
         public Matrix4x4 transform;
         public Vector3 orientation;
