@@ -170,7 +170,7 @@ namespace AdvAnimation
                                 float.Parse(args[5]),
                                 float.Parse(args[6]));
 
-                            node.spacialPose.scale = Vector3.up * float.Parse(args[7]);
+                            node.spacialPose.scale = Vector3.up * float.Parse(args[7]) * 0.001f;
 
                             break;
                         }

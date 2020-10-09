@@ -25,7 +25,8 @@ public class CreatePoseData : MonoBehaviour
 
                 if (parent != null)
                 {
-                    current.spacialPose.translation += Quaternion.Euler(parent.spacialPose.orientation) * parent.spacialPose.translation; //+ Quaternion.Euler(parent.spacialPose.orientation) * Vector3.up * parent.spacialPose.scale.y;
+                    current.spacialPose.translation = parent.spacialPose.translation +
+                                                      Quaternion.Euler(parent.spacialPose.orientation) * current.spacialPose.translation;//Quaternion.Euler(parent.spacialPose.orientation) * parent.spacialPose.translation; //+ Quaternion.Euler(parent.spacialPose.orientation) * Vector3.up * parent.spacialPose.scale.y;
                     current.spacialPose.orientation += parent.spacialPose.orientation;
                 }
 
@@ -38,15 +39,24 @@ public class CreatePoseData : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (worldSpaceNodes != null && worldSpaceNodes.Length > 0)
-        {
+        //if (worldSpaceNodes != null && worldSpaceNodes.Length > 0)
+        //{
             
-            for (int i = 0; i < worldSpaceNodes.Length; i++)
-            {
-                Gizmos.color = Color.Lerp(Color.green, Color.red, (float)i / worldSpaceNodes.Length);
-                Gizmos.DrawCube(worldSpaceNodes[i].spacialPose.translation, Vector3.one * 0.1f);
-            }
+        //    for (int i = 0; i < worldSpaceNodes.Length; i++)
+        //    {
+        //        Gizmos.color = Color.Lerp(Color.green, Color.red, (float)i / worldSpaceNodes.Length);
+        //        Gizmos.DrawCube(worldSpaceNodes[i].spacialPose.translation, Vector3.one * 0.1f);
+        //    }
 
+        //}
+
+        if (transform.childCount > 0)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Gizmos.color = Color.Lerp(Color.green, Color.red, (float)i / transform.childCount);
+                Gizmos.DrawCube(transform.GetChild(i).position, Vector3.one * 0.05f);
+            }
         }
     }
 
