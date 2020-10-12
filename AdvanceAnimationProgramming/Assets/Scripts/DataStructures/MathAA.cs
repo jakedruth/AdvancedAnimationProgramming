@@ -79,7 +79,7 @@ namespace AdvAnimation
             float q1 = -3 * uuu + 4 * uu + u;
             float qN = uuu - uu;
 
-            return new SpacialPose()
+            return new SpacialPose
             {
                 orientation = (pP.orientation * qP + p0.orientation * q0 + p1.orientation * q1 + pN.orientation * qN) *
                               0.5f,
