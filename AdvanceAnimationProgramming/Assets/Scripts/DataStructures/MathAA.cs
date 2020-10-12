@@ -53,5 +53,10 @@ namespace AdvAnimation
 
             return pose;
         }
+
+        public static SpacialPose Nearest(SpacialPose a, SpacialPose b, float u)
+        {
+            return (u < 0.5f) ? a : b;
+        }
     }
 }
