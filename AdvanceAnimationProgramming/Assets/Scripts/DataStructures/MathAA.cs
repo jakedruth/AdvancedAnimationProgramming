@@ -42,5 +42,16 @@ namespace AdvAnimation
             };
         }
 
+        public static SpacialPose Add(this SpacialPose pose, SpacialPose other)
+        {
+            pose.orientation += other.orientation;
+
+            pose.scale.x *= other.scale.x;
+            pose.scale.y *= other.scale.y;
+            pose.scale.z *= other.scale.z;
+            pose.translation += other.translation;
+
+            return pose;
+        }
     }
 }
