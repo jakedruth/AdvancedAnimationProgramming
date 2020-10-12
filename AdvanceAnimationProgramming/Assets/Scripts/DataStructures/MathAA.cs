@@ -58,5 +58,15 @@ namespace AdvAnimation
         {
             return (u < 0.5f) ? a : b;
         }
+
+        public static SpacialPose Lerp(SpacialPose a, SpacialPose b, float u)
+        {
+            return new SpacialPose
+            {
+                orientation = (1 - u) * a.orientation + u * b.orientation,
+                scale = (1 - u) * a.scale + u * b.scale,
+                translation = (1 - u) * a.translation + u * b.translation
+            };
+        }
     }
 }
