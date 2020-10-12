@@ -20,5 +20,16 @@ namespace AdvAnimation
             return new SpacialPose {orientation = pose.orientation, scale = pose.scale, translation = pose.translation};
         }
 
+        public static SpacialPose Invert(SpacialPose pose)
+        {
+            pose.orientation *= -1;
+
+            pose.scale.x = 1 / pose.scale.x;
+            pose.scale.y = 1 / pose.scale.y;
+            pose.scale.z = 1 / pose.scale.z;
+            pose.translation *= -1;
+
+            return pose;
+        }
     }
 }
