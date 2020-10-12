@@ -68,5 +68,25 @@ namespace AdvAnimation
                 translation = (1 - u) * a.translation + u * b.translation
             };
         }
+
+        public static SpacialPose Cubic(SpacialPose pP, SpacialPose p0, SpacialPose p1, SpacialPose pN, float u)
+        {
+            float uu = u * u;
+            float uuu = uu * u;
+
+            float qP = -uuu + 2 * uu - u;
+            float q0 = +3 * uuu - 5 * uu + 2;
+            float q1 = -3 * uuu + 4 * uu + u;
+            float qN = uuu - uu;
+
+            return new SpacialPose()
+            {
+                orientation = (pP.orientation * qP + p0.orientation * q0 + p1.orientation * q1 + pN.orientation * qN) *
+                              0.5f,
+                scale = (pP.scale * qP + p0.scale * q0 + p1.scale * q1 + pN.scale * qN) * 0.5f,
+                translation = (pP.translation * qP + p0.translation * q0 + p1.translation * q1 + pN.translation * qN) *
+                              0.5f,
+            };
+        }
     }
 }
