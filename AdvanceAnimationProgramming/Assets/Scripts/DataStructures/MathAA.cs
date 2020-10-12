@@ -31,5 +31,16 @@ namespace AdvAnimation
 
             return pose;
         }
+
+        public static SpacialPose Concat(SpacialPose a, SpacialPose b)
+        {
+            return new SpacialPose
+            {
+                orientation = a.orientation + b.orientation,
+                scale = new Vector3(a.scale.x * b.scale.x, a.scale.y * b.scale.y, a.scale.z * b.scale.z),
+                translation = a.translation + b.translation
+            };
+        }
+
     }
 }
