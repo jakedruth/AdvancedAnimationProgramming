@@ -14,5 +14,11 @@ namespace AdvAnimation
         {
             return new SpacialPose {orientation = orientation, scale = scale, translation = translation};
         }
+
+        public static SpacialPose Copy(SpacialPose pose)
+        {
+            return new SpacialPose {orientation = pose.orientation, scale = pose.scale, translation = pose.translation};
+        }
+
     }
 }
