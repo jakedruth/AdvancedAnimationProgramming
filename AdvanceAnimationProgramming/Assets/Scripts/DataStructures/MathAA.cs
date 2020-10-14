@@ -56,7 +56,7 @@ namespace AdvAnimation
 
         public static SpacialPose Nearest(SpacialPose a, SpacialPose b, float u)
         {
-            return (u < 0.5f) ? a : b;
+            return u < 0.5f ? a : b;
         }
 
         public static SpacialPose Lerp(SpacialPose a, SpacialPose b, float u)
