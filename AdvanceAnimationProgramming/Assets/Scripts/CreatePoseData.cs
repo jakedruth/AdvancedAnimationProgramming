@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    CreatePoseData.cs - Creates a pose using an htr file.
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using AdvAnimation;
 using UnityEngine;

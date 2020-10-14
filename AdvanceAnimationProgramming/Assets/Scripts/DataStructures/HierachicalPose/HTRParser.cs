@@ -1,9 +1,15 @@
-﻿using System;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    HTRParser.cs - A pool or group of hierarchical poses and their individual node poses.
+*/
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace AdvAnimation
