@@ -102,5 +102,11 @@ namespace AdvAnimation
         {
             return Lerp(Identity(), pose, u);
         }
+
+        public static SpacialPose TriangularBlend(SpacialPose p0, SpacialPose p1, SpacialPose p2, float u1, float u2)
+        {
+            float u0 = 1 - u1 - u2;
+            return Scale(p0, u0).Add(Scale(p1, u1)).Add(Scale(p2, u2));
+        }
     }
 }
