@@ -110,9 +110,30 @@ namespace AdvAnimation
         }
 
         public static SpacialPose BiNearest(SpacialPose p00, SpacialPose p01, SpacialPose p10, SpacialPose p11,
-            float u0, float u1, float u2)
+            float u0, float u1, float u)
         {
-            return Nearest(Nearest(p00, p01, u0), Nearest(p10, p11, u1), u2);
+            return Nearest(Nearest(p00, p01, u0), Nearest(p10, p11, u1), u);
+        }
+
+        public static SpacialPose BiLerp(SpacialPose p00, SpacialPose p01, SpacialPose p10, SpacialPose p11,
+            float u0, float u1, float u)
+        {
+            return Lerp(Lerp(p00, p01, u0), Lerp(p10, p11, u1), u);
+        }
+
+        public static SpacialPose BiCubic(
+            SpacialPose pap, SpacialPose pa0, SpacialPose pa1, SpacialPose pan,
+            SpacialPose pbp, SpacialPose pb0, SpacialPose pb1, SpacialPose pbn,
+            SpacialPose pcp, SpacialPose pc0, SpacialPose pc1, SpacialPose pcn,
+            SpacialPose pdp, SpacialPose pd0, SpacialPose pd1, SpacialPose pdn,
+            float ua, float ub, float uc, float ud, float u)
+        {
+            return Cubic(
+                Cubic(pap, pa0, pa1, pan, ua),
+                Cubic(pbp, pb0, pb1, pbn, ub),
+                Cubic(pcp, pc0, pc1, pcn, uc),
+                Cubic(pdp, pd0, pd1, pdn, ud),
+                u);
         }
     }
 }
