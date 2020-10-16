@@ -7,7 +7,7 @@
 
 namespace AdvAnimation
 {
-    class HierarchicalPose
+    public class HierarchicalPose
     {
         public SpacialPose rootPose;
 
