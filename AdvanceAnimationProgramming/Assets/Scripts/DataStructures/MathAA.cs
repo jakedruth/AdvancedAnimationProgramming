@@ -235,5 +235,15 @@ namespace AdvAnimation
                 Cubic(pdp, pd0, pd1, pdn, ud),
                 u);
         }
+
+        public static SpacialPose LerpCompositeOne(SpacialPose a, SpacialPose b, float u)
+        {
+            return Add(a, Scale(Subtract(b, a), u));
+        }
+
+        public static SpacialPose LerpCompositeTwo(SpacialPose a, SpacialPose b, float u)
+        {
+            return Scale(a, 1 - u).Add(Scale(b, u));
+        }
     }
 }
