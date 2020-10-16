@@ -108,5 +108,11 @@ namespace AdvAnimation
             float u0 = 1 - u1 - u2;
             return Scale(p0, u0).Add(Scale(p1, u1)).Add(Scale(p2, u2));
         }
+
+        public static SpacialPose BiNearest(SpacialPose p00, SpacialPose p01, SpacialPose p10, SpacialPose p11,
+            float u0, float u1, float u2)
+        {
+            return Nearest(Nearest(p00, p01, u0), Nearest(p10, p11, u1), u2);
+        }
     }
 }
