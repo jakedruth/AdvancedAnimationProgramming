@@ -11,6 +11,19 @@ namespace AdvAnimation
         private int _offset;
         private ClipController[] _clipControllers;
 
+        [Header("Bi-Lerp Values")]
+        [Range(0, 1)] public float lerpU0;
+        [Range(0, 1)] public float lerpU1;
+        [Range(0, 1)] public float lerpU;
+
+        [Header("Bi-Cubic Values")] 
+        [Range(0, 1)] public float cubicU0; 
+        [Range(0, 1)] public float cubicU1; 
+        [Range(0, 1)] public float cubicU2;
+        [Range(0, 1)] public float cubicU3;
+        [Range(0, 1)] public float cubicU4; 
+        [Range(0, 1)] public float cubicU;
+
         void Start()
         {
             InitPoseData();
@@ -50,6 +63,52 @@ namespace AdvAnimation
             poses.Add(MathAA.Concat(poses[5], b));                                                          // 10
             poses.Add(MathAA.Concat(poses[6], b));                                                          // 11
             poses.Add(MathAA.Identity());                                                                   // 12 Animates
+            poses.Add(MathAA.Concat(poses[8], b));                                                          // 13
+            poses.Add(MathAA.Copy(poses[13]));                                                              // 14
+            poses[14].translation.x += 3;
+            poses[14].translation.y += 1;
+            poses.Add(MathAA.Copy(poses[14]));                                                              // 15
+            poses[15].translation.x -= 3;
+            poses[15].translation.y += 0.5f;
+            poses[15].translation.z += 3;
+            poses.Add(MathAA.Copy(poses[15]));                                                              // 16
+            poses[16].translation.x += 3;
+            poses[16].translation.y += 2.5f;
+            poses.Add(MathAA.Identity());                                                                   // 17 Animates Manually
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 18 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 19 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 20 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 21 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 22 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 23 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 24 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 25 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 26 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 27 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 28 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 29 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 30 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 31 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 32 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 33 
+            poses.Add(MathAA.Concat(poses[13], b));                                                         // 34 Animates Manually 
+            poses[18].translation += new Vector3(0, 2, 0);
+            poses[19].translation += new Vector3(2, 1.5f, 0);
+            poses[20].translation += new Vector3(4, 1, 0);
+            poses[21].translation += new Vector3(6, 2, 0);
+            poses[22].translation += new Vector3(0, 4, 2);
+            poses[23].translation += new Vector3(2, 0.5f, 2);
+            poses[24].translation += new Vector3(4, 2, 2);
+            poses[25].translation += new Vector3(6, 3, 2);
+            poses[26].translation += new Vector3(0, 3.5f, 4);
+            poses[27].translation += new Vector3(2, 2, 4);
+            poses[28].translation += new Vector3(4, 4, 4);
+            poses[29].translation += new Vector3(6, 1, 4);
+            poses[30].translation += new Vector3(0, 1, 6);
+            poses[31].translation += new Vector3(2, 2, 6);
+            poses[32].translation += new Vector3(4, 4, 6);
+            poses[33].translation += new Vector3(6, 3.5f, 6);
+
         }
 
         void Update()
@@ -67,6 +126,13 @@ namespace AdvAnimation
                                      poses[8 + (uA + 1) % 4],
                                      poses[8 + (uA + 2) % 4],
                                      _clipControllers[1].keyframeParameter);
+            poses[17] = MathAA.BiLerp(poses[13], poses[14], poses[15], poses[16], lerpU0, lerpU1, lerpU);
+            poses[34] = MathAA.BiCubic(
+                poses[18], poses[19], poses[20], poses[21],
+                poses[22], poses[23], poses[24], poses[25],
+                poses[26], poses[27], poses[28], poses[29],
+                poses[30], poses[31], poses[32], poses[33],
+                cubicU0, cubicU1, cubicU2, cubicU3, cubicU);
         }
 
         private void OnDrawGizmos()
@@ -85,6 +151,24 @@ namespace AdvAnimation
                 Gizmos.DrawWireSphere(pos, 0.1f);
                 Gizmos.DrawLine(pos, pos + Quaternion.Euler(pose.orientation) * Vector3.right * pose.scale.x);
             }
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(poses[13].translation, poses[14].translation);
+            Gizmos.DrawLine(poses[15].translation, poses[16].translation);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(
+                Vector3.Lerp(poses[13].translation, poses[14].translation, lerpU0),
+                Vector3.Lerp(poses[15].translation, poses[16].translation, lerpU1));
+
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Gizmos.DrawLine(poses[18 + i * 4 + j].translation, poses[18 + i * 4 + j + 1].translation);
+                }    
+            }
+
         }
     }
 }
