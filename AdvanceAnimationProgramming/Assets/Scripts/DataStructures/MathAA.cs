@@ -27,6 +27,7 @@ namespace AdvAnimation
             pose.scale.x = 1 / pose.scale.x;
             pose.scale.y = 1 / pose.scale.y;
             pose.scale.z = 1 / pose.scale.z;
+
             pose.translation *= -1;
 
             return pose;
@@ -81,12 +82,20 @@ namespace AdvAnimation
 
             return new SpacialPose
             {
-                orientation = (pP.orientation * qP + p0.orientation * q0 + p1.orientation * q1 + pN.orientation * qN) *
-                              0.5f,
+                orientation = (pP.orientation * qP + p0.orientation * q0 + p1.orientation * q1 + pN.orientation * qN) * 0.5f,
                 scale = (pP.scale * qP + p0.scale * q0 + p1.scale * q1 + pN.scale * qN) * 0.5f,
-                translation = (pP.translation * qP + p0.translation * q0 + p1.translation * q1 + pN.translation * qN) *
-                              0.5f,
+                translation = (pP.translation * qP + p0.translation * q0 + p1.translation * q1 + pN.translation * qN) * 0.5f,
             };
+        }
+
+        public static SpacialPose DeConcat(SpacialPose a, SpacialPose b)
+        {
+            return Concat(a, Invert(b));
+        }
+
+        public static SpacialPose Subtract(this SpacialPose pose, SpacialPose other)
+        {
+            return pose.Add(Invert(other));
         }
     }
 }
