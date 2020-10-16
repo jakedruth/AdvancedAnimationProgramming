@@ -97,5 +97,10 @@ namespace AdvAnimation
         {
             return pose.Add(Invert(other));
         }
+
+        public static SpacialPose Scale(SpacialPose pose, float u)
+        {
+            return Lerp(Identity(), pose, u);
+        }
     }
 }
