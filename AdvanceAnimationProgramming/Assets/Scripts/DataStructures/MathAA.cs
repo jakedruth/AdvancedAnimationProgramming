@@ -1,4 +1,10 @@
-﻿
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    MathAA.cs - Similar to Mathf for floats, MathAA is math for Advanced Animation poses
+*/
+
 using UnityEngine;
 
 namespace AdvAnimation
@@ -25,6 +31,11 @@ namespace AdvAnimation
             return new SpacialPose {orientation = pose.orientation, scale = pose.scale, translation = pose.translation};
         }
 
+        public static SpacialPose Clone(this SpacialPose pose)
+        {
+            return Copy(pose);
+        }
+
         public static HierarchicalPose Copy(HierarchicalPose hierarchicalPose)
         {
             return new HierarchicalPose {rootPose = Copy(hierarchicalPose.rootPose)};
@@ -41,6 +52,11 @@ namespace AdvAnimation
             pose.translation *= -1;
 
             return pose;
+        }
+
+        public static SpacialPose Negate(this SpacialPose pose)
+        {
+            return Invert(pose);
         }
 
         public static HierarchicalPose Invert(HierarchicalPose hierarchicalPose)
@@ -87,7 +103,7 @@ namespace AdvAnimation
 
         public static SpacialPose Nearest(SpacialPose a, SpacialPose b, float u)
         {
-            return u < 0.5f ? Copy(a) : Copy(b);
+            return u < 0.5f ? a.Clone() : b.Clone();
         }
 
         public static HierarchicalPose Nearest(HierarchicalPose a, HierarchicalPose b, float u)
@@ -141,7 +157,7 @@ namespace AdvAnimation
 
         public static SpacialPose DeConcat(SpacialPose a, SpacialPose b)
         {
-            return Concat(a, Invert(b));
+            return Concat(a, b.Negate());
         }
 
         public static HierarchicalPose DeConcat(HierarchicalPose a, HierarchicalPose b)
@@ -151,7 +167,7 @@ namespace AdvAnimation
 
         public static SpacialPose Subtract(this SpacialPose pose, SpacialPose other)
         {
-            return pose.Add(Invert(other));
+            return pose.Add(other.Negate());
         }
 
         public static HierarchicalPose Subtract(this HierarchicalPose pose, HierarchicalPose other)
