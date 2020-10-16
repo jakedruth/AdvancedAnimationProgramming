@@ -157,7 +157,7 @@ namespace AdvAnimation
 
         public static SpacialPose DeConcat(SpacialPose a, SpacialPose b)
         {
-            return Concat(a, b.Negate());
+            return Concat(a, Invert(b));
         }
 
         public static HierarchicalPose DeConcat(HierarchicalPose a, HierarchicalPose b)
@@ -254,7 +254,9 @@ namespace AdvAnimation
 
         public static SpacialPose LerpCompositeOne(SpacialPose a, SpacialPose b, float u)
         {
-            return Add(a, Scale(Subtract(b, a), u));
+
+
+            return Concat(a, Scale(DeConcat(b, a), u));
         }
 
         public static SpacialPose LerpCompositeTwo(SpacialPose a, SpacialPose b, float u)
