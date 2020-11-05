@@ -47,11 +47,11 @@ namespace AdvAnimation
 
     class HierarchicalPosePool
     {
-        public Hierarchy hierarchy;
-        public List<SpacialPose> spacialPosePool;
-        public List<HierarchicalPose> hierarchicalPoses;
-        public List<SpatialPoseChannel> channels;
-        public int eulerOrder; // Flag for for the pool that describes the concatenation order of orientation channels
+        public Hierarchy hierarchy = new Hierarchy();
+        public List<SpacialPose> spacialPosePool = new List<SpacialPose>();
+        public List<HierarchicalPose> hierarchicalPoses = new List<HierarchicalPose>();
+        public List<SpatialPoseChannel> channels = new List<SpatialPoseChannel>();
+        public int eulerOrder = 0; // Flag for for the pool that describes the concatenation order of orientation channels
 
         public int HierarchicalPoseCount
         {

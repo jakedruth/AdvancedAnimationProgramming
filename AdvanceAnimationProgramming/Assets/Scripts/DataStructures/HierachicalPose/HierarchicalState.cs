@@ -9,10 +9,10 @@ namespace AdvAnimation
 {
     class HierarchicalState
     {
-        public Hierarchy hierarchy;
-        public HierarchicalPose samplePose;
-        public HierarchicalPose localSpacePose;
-        public HierarchicalPose objectSpacePose;
+        public Hierarchy hierarchy = new Hierarchy();
+        //public HierarchicalPose samplePose;
+        //public HierarchicalPose localSpacePose;
+        //public HierarchicalPose objectSpacePose;
 
         public void SolveForwardKinematics()
         {

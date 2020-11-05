@@ -8,7 +8,6 @@ namespace AdvAnimation
     public class Lab03Interface : MonoBehaviour
     {
         public List<SpacialPose> poses;
-        private int _offset;
         private ClipController[] _clipControllers;
 
         [Header("Bi-Lerp Values")]
@@ -40,7 +39,7 @@ namespace AdvAnimation
                     new ClipPool(new Clip("3, 4, 5, 6", new KeyframePool(new Keyframe(0, 1, 0), new Keyframe(1, 2, 1), new Keyframe(2, 3, 2), new Keyframe(3, 4, 3)), 0, 
                         3, new Transition(TransitionType.FORWARD), new Transition(TransitionType.BACKWARD))), 0),
             };
-                _offset = 3;
+
             poses = new List<SpacialPose>();
 
             poses.Add(MathAA.Identity());                                                                   // 0
