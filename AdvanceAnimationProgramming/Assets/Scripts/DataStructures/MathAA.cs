@@ -5,6 +5,7 @@
     MathAA.cs - Similar to Mathf for floats, MathAA is math for Advanced Animation poses
 */
 
+using System;
 using UnityEngine;
 
 namespace AdvAnimation
@@ -70,6 +71,7 @@ namespace AdvAnimation
 
             return pose;
         }
+
         public static SpacialPose Nearest(SpacialPose a, SpacialPose b, float u)
         {
             return u < 0.5f ? a.Clone() : b.Clone();
@@ -97,9 +99,11 @@ namespace AdvAnimation
 
             return new SpacialPose
             {
-                orientation = (pP.orientation * qP + p0.orientation * q0 + p1.orientation * q1 + pN.orientation * qN) * 0.5f,
+                orientation = (pP.orientation * qP + p0.orientation * q0 + p1.orientation * q1 + pN.orientation * qN) *
+                              0.5f,
                 scale = (pP.scale * qP + p0.scale * q0 + p1.scale * q1 + pN.scale * qN) * 0.5f,
-                translation = (pP.translation * qP + p0.translation * q0 + p1.translation * q1 + pN.translation * qN) * 0.5f,
+                translation = (pP.translation * qP + p0.translation * q0 + p1.translation * q1 + pN.translation * qN) *
+                              0.5f,
             };
         }
 
@@ -204,7 +208,8 @@ namespace AdvAnimation
             };
         }
 
-        public static HierarchicalPose Cubic(HierarchicalPose pP, HierarchicalPose p0, HierarchicalPose p1, HierarchicalPose pN, float u)
+        public static HierarchicalPose Cubic(HierarchicalPose pP, HierarchicalPose p0, HierarchicalPose p1,
+            HierarchicalPose pN, float u)
         {
             return new HierarchicalPose
             {
@@ -234,13 +239,15 @@ namespace AdvAnimation
             return Scale(p0, u0).Add(Scale(p1, u1)).Add(Scale(p2, u2));
         }
 
-        public static HierarchicalPose BiNearest(HierarchicalPose p00, HierarchicalPose p01, HierarchicalPose p10, HierarchicalPose p11,
+        public static HierarchicalPose BiNearest(HierarchicalPose p00, HierarchicalPose p01, HierarchicalPose p10,
+            HierarchicalPose p11,
             float u0, float u1, float u)
         {
             return Nearest(Nearest(p00, p01, u0), Nearest(p10, p11, u1), u);
         }
 
-        public static HierarchicalPose BiLerp(HierarchicalPose p00, HierarchicalPose p01, HierarchicalPose p10, HierarchicalPose p11,
+        public static HierarchicalPose BiLerp(HierarchicalPose p00, HierarchicalPose p01, HierarchicalPose p10,
+            HierarchicalPose p11,
             float u0, float u1, float u)
         {
             return Lerp(Lerp(p00, p01, u0), Lerp(p10, p11, u1), u);
@@ -259,6 +266,28 @@ namespace AdvAnimation
                 Cubic(pcp, pc0, pc1, pcn, uc),
                 Cubic(pdp, pd0, pd1, pdn, ud),
                 u);
+        }
+
+        public static T Next<T>(this T src) where T : Enum
+        {
+            T[] arr = (T[]) Enum.GetValues(src.GetType());
+            int j = Array.IndexOf(arr, src) + 1;
+            return (j == arr.Length) ? arr[0] : arr[j];
+        }
+
+        public static T Prev<T>(this T src) where T : Enum
+        {
+            T[] arr = (T[]) Enum.GetValues(src.GetType());
+            int j = Array.IndexOf(arr, src) - 1;
+            return (j < 0) ? arr[arr.Length - 1] : arr[j];
+        }
+
+        public static T Increment<T>(this T src, int amount) where T : Enum
+        {
+            T[] arr = (T[]) Enum.GetValues(src.GetType());
+            int j = Array.IndexOf(arr, src) + amount;
+            j = (j + arr.Length) % arr.Length;
+            return arr[j];
         }
     }
 }
