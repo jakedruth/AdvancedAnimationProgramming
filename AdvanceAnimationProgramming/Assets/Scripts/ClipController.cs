@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace AdvAnimation
 {
@@ -35,6 +36,7 @@ namespace AdvAnimation
         public PlaybackDirection playback;
         public float playbackSpeed;
 
+        public Dictionary<string, object> transitionParameters;
 
         /// <summary>
         /// Create a Clip Controller
@@ -57,6 +59,8 @@ namespace AdvAnimation
 
             playback = PlaybackDirection.FORWARD;
             playbackSpeed = 1;
+
+            transitionParameters = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -181,6 +185,24 @@ namespace AdvAnimation
                 index = clipPool.Count - 1;
 
             SetCurrentClip(index);
+        }
+
+        public void SetTransitionParameterValue(string parameterName, object value)
+        {
+            if (transitionParameters.ContainsKey(parameterName))
+                transitionParameters[parameterName] = value;
+            else
+                transitionParameters.Add(parameterName, value);
+        }
+
+        public T GetTransitionParameterValue<T>(string parameterName)
+        {
+            return (T)transitionParameters[parameterName];
+        }
+
+        public object GetTransitionParameterValue(string parameterName)
+        {
+            return transitionParameters[parameterName];
         }
 
         public enum EvaluationType

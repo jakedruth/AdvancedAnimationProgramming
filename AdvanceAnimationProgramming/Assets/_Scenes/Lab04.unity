@@ -568,6 +568,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1454372257}
   - component: {fileID: 1454372258}
+  - component: {fileID: 1454372260}
   m_Layer: 0
   m_Name: InputNode
   m_TagString: Untagged
@@ -602,6 +603,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e517e88cd0247d142905c7a5823a97a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleValue: 2
-  controlType: 0
-  convertRightStickToAngle: 0
+  scaleValue: 1
+  positionControlType: 0
+  rotationControlType: 0
+  lerpValue: 0.3
+--- !u!114 &1454372260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454372256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89d48d3f01273c94ea7323163963ac98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayGUIControls: 1

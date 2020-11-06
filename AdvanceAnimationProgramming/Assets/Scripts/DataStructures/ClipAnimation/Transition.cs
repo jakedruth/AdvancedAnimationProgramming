@@ -6,6 +6,8 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace AdvAnimation
 {
@@ -27,25 +29,33 @@ namespace AdvAnimation
         public TransitionType transitionType;
         public string transitionClipName;
 
+        private ClipController _controller;
+        private readonly List<(string parameterName, string nextClip, Func<object, bool>)> _conditions;
+
         public Transition(TransitionType type, string clip = null)
         {
             transitionType = type;
             transitionClipName = clip;
+            _controller = null;
+            _conditions = new List<(string parameterName, string nextClip, Func<object, bool>)>();
+        }
+
+        public void SetController(ClipController controller)
+        {
+            _controller = controller;
+        }
+
+        public void AddCondition(string parameterName, string nextClip, Func<object, bool> function)
+        {
+            if (_controller == null)
+                throw new Exception("Can not add transitional Conditions if the controller is null");
+            _conditions.Add((parameterName, nextClip, function));
         }
 
         public void HandleTransition(ClipPool pool, ref int clipIndex, ref int keyframeIndex, 
             ref float keyframeTime, ref PlaybackDirection playbackDirection)
         {
-            // Attempt to find the next clip from the supplied name
-            Clip nextClip = null;
-            if (!string.IsNullOrEmpty(transitionClipName))
-            {
-                int i = pool.GetClipIndexByName(transitionClipName);
-                if (i >= 0)
-                {
-                    nextClip = pool[i];
-                }
-            }
+            Clip nextClip = GetNextClip(pool);
 
             // If the next transitional clip is null, set it to the current clip
             if (nextClip == null)
@@ -127,6 +137,68 @@ namespace AdvAnimation
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        protected Clip GetNextClip(ClipPool pool)
+        {
+            // Check conditions to see if conditional transition occured
+            for (int i = 0; i < _conditions.Count; i++)
+            {
+                (string parameterName, string nextClip, Func<object, bool> func) condition = _conditions[i];
+
+                object obj = _controller.transitionParameters[condition.parameterName];
+
+                if (condition.func(obj))
+                {
+                    return FindClip(pool, condition.nextClip);
+                }
+            }
+
+            return FindClip(pool, transitionClipName);
+        }
+
+        protected Clip FindClip(ClipPool pool, string clipName)
+        {
+            if (string.IsNullOrEmpty(clipName))
+                return null;
+
+            Clip nextClip = null;
+            int index = pool.GetClipIndexByName(clipName);
+            if (index >= 0)
+            {
+                nextClip = pool[index];
+            }
+
+            return nextClip;
+        }
+    }
+
+    public class Trigger
+    {
+        private bool _value;
+
+        public Trigger(bool valueIn = false)
+        {
+            _value = valueIn;
+        }
+
+        public static implicit operator Trigger(bool other)
+        {
+            return new Trigger(other);
+        }
+
+        public bool Get()
+        {
+            if (!_value) 
+                return false;
+            
+            _value = false;
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return _value.ToString();
         }
     }
 }

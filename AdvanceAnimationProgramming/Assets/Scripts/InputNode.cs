@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    InputNode.cs - Handles the different types of Inputs
+*/
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
@@ -23,8 +30,7 @@ namespace AdvAnimation
         public float scaleValue;
         public LocomotionControlType positionControlType;
         public LocomotionControlType rotationControlType;
-        [Range(0, 1)]
-        public float lerpValue;
+        [Range(0, 1)] public float lerpValue;
 
         private Vector3 _pos;
         private Vector3 _posVel;
@@ -32,6 +38,10 @@ namespace AdvAnimation
         private float _rot;
         private float _rotVel;
         private float _rotAcc;
+
+        protected internal Vector3 rawInputLeft;
+        protected internal Vector3 rawInputRight;
+        protected internal bool jumpKeyDown;
 
         // Start is called before the first frame update
         void Start()
@@ -44,19 +54,20 @@ namespace AdvAnimation
         {
             GamepadState current = GamePad.GetState(GamePad.Index.Any, true);
 
-            Vector3 rawInputLeft = new Vector3(current.LeftStickAxis.x, 0, current.LeftStickAxis.y);
-            Vector3 rawInputRight = new Vector3(current.rightStickAxis.x, 0, current.rightStickAxis.y);
+            rawInputLeft = new Vector3(current.LeftStickAxis.x, 0, current.LeftStickAxis.y);
+            rawInputRight = new Vector3(current.rightStickAxis.x, 0, current.rightStickAxis.y);
+            jumpKeyDown = current.A && !_prevGamepadState.A || Input.GetKeyDown(KeyCode.Space);
 
-            if (current.Right && !_prevGamepadState.Right)
+            if (current.Right && !_prevGamepadState.Right || Input.GetKeyDown(KeyCode.E))
                 GoToNextLocomotionControlType(ref positionControlType, true);
 
-            if (current.Left && !_prevGamepadState.Left)
+            if (current.Left && !_prevGamepadState.Left || Input.GetKeyDown(KeyCode.Q))
                 GoToNextLocomotionControlType(ref positionControlType, false);
 
-            if (current.Up && !_prevGamepadState.Up)
+            if (current.Up && !_prevGamepadState.Up || Input.GetKeyDown(KeyCode.O))
                 GoToNextLocomotionControlType(ref rotationControlType, true);
 
-            if (current.Down && !_prevGamepadState.Down)
+            if (current.Down && !_prevGamepadState.Down || Input.GetKeyDown(KeyCode.U))
                 GoToNextLocomotionControlType(ref rotationControlType, false);
 
             if (Input.GetKey(KeyCode.A))
@@ -155,5 +166,4 @@ namespace AdvAnimation
             _rot = _rotVel = _rotAcc = 0f;
         }
     }
-
 }
