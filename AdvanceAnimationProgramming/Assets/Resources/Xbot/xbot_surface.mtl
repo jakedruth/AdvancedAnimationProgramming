@@ -1,0 +1,16 @@
+newmtl Beta_JointsSG
+illum 4
+Kd 0.33 0.12 0.10
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.30 0.30 0.30
+Ns 0.00
+newmtl Beta_SurfaceSG
+illum 4
+Kd 0.84 0.30 0.26
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.49 0.49 0.49
+Ns 1.68
