@@ -61,7 +61,7 @@ namespace AdvAnimation
             _targetLookAt = headLocator.position;
 
             // procedural grab variables
-            _proceduralRightArm = new ProceduralGrab(rightHand, rightHandLocator, 0);
+            _proceduralRightArm = new ProceduralGrab(rightHand, rightHandLocator, 2);
             _proceduralLeftArm  = new ProceduralGrab(leftHand,  leftHandLocator,  2);
             _proceduralRightLeg = new ProceduralGrab(rightLeg,  rightLegLocator,  2);
         }
@@ -147,8 +147,8 @@ namespace AdvAnimation
 
             //_proceduralRightArm.GrabAt(rightHandLocator.position, rightHandConstraint.position, _direction[direction]);
             _proceduralRightArm.ResolveIK(rightHandLocator.position, rightHandLocator.rotation, rightHandConstraint.position, snapBack);
-            _proceduralLeftArm.ResolveIK(leftHandLocator.position, leftHandLocator.rotation, leftHandConstraint.position, snapBack);
-            _proceduralRightLeg.ResolveIK(rightLegLocator.position, rightLegLocator.rotation, rightLegConstraint.position, snapBack);
+            _proceduralLeftArm.ResolveIK( leftHandLocator.position,  leftHandLocator.rotation,  leftHandConstraint.position,  snapBack);
+            _proceduralRightLeg.ResolveIK(rightLegLocator.position,  rightLegLocator.rotation,  rightLegConstraint.position,  snapBack);
             #endregion
         }
 
