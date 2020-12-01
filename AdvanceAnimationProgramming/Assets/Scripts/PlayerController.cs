@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace AdvAnimation
         private const float DEAD_ZONE = 0.01f; // = 0.1 ^ 2
         [Header("Movement Variables")]
         public float maxSpeed;
+        public float jumpSpeed;
         public float accelerationRate;
         public float gravity;
         private Vector3 _horizontalVelocity;
@@ -29,7 +31,6 @@ namespace AdvAnimation
         private Vector3 _startDeltaLookAtPoint;
         private Vector3 _targetLookAt;
 
-        
         //[Header("Procedural Grab Variables")]
         [Header("Right Arm")]
         public Transform rightHand;
@@ -49,7 +50,6 @@ namespace AdvAnimation
         public Transform rightFootConstraint;
         private ProceduralGrab _proceduralRightLeg;
         private Vector3 _rightFootStartPos;
-        private Quaternion _rightFootStartRotation;
 
         [Header("Left Leg")]
         public Transform leftFoot;
@@ -81,8 +81,7 @@ namespace AdvAnimation
 
             // Starting Locator Values
             _rightFootStartPos = transform.InverseTransformPoint(rightFootLocator.position);
-            _rightFootStartRotation = transform.rotation * Quaternion.Inverse(rightFootLocator.rotation);
-            
+
             _leftFootStartPos = transform.InverseTransformPoint(leftFootLocator.position);
         }
 
@@ -100,6 +99,8 @@ namespace AdvAnimation
             GamepadState current = GamePad.GetState(GamePad.Index.Any, true);
             Vector3 rawInputLeft = new Vector3(current.LeftStickAxis.x, 0, current.LeftStickAxis.y);
             Vector3 rawInputRight = new Vector3(current.rightStickAxis.x, 0, current.rightStickAxis.y);
+            float rightTrigger = current.RightTrigger;
+            float leftTrigger = current.LeftTrigger;
             bool jumpKeyDown = current.A && !_prevGamepadState.A || Input.GetKeyDown(KeyCode.Space);
 
             if (Input.GetKey(KeyCode.A))
@@ -129,8 +130,14 @@ namespace AdvAnimation
             #region Handle Movement
 
             _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, rawInputLeft * maxSpeed, accelerationRate * Time.deltaTime);
-            if (!_characterController.isGrounded)
-                _verticalVelocity.y -= gravity * Time.deltaTime;
+            
+            _verticalVelocity.y -= gravity * Time.deltaTime;
+
+            if (jumpKeyDown)
+            {
+                _verticalVelocity.y = jumpSpeed;
+                Debug.Log(_verticalVelocity.y);
+            }
 
             if (rawInputLeft.sqrMagnitude >= DEAD_ZONE)
             {
@@ -138,8 +145,7 @@ namespace AdvAnimation
                     rotateSpeed * Time.deltaTime);
             }
 
-            _characterController.SimpleMove(_horizontalVelocity + _verticalVelocity);
-
+            _characterController.Move((_horizontalVelocity + _verticalVelocity) * Time.deltaTime);
             //transform.position += _horizontalVelocity * Time.deltaTime;
 
             #endregion
@@ -149,15 +155,30 @@ namespace AdvAnimation
             //rightFootLocator.position = transform.position + transform.rotation * _rightFootStartPos + Vector3.Lerp(Vector3.zero, delta, t); 
             //leftFootLocator.position =  transform.position + transform.rotation * _leftFootStartPos + Vector3.Lerp(Vector3.zero, delta, 1 - t); 
 
-            Ray rightFootRay = new Ray(transform.position + transform.rotation * _rightFootStartPos, Vector3.down);
+            Vector3 maxFootUp = new Vector3(0, 0.5f, 0);
+
+            Ray rightFootRay = new Ray(transform.position + transform.rotation * _rightFootStartPos + Vector3.up, Vector3.down);
             if (Physics.Raycast(rightFootRay, out RaycastHit hit))
             {
-                rightFootLocator.position = hit.point;
-                //Debug.Log(hit.normal);a
+                rightFootLocator.position = hit.point + transform.rotation * Vector3.up * _rightFootStartPos.y;
+                rightFootLocator.position += maxFootUp * rightTrigger;
+
                 Vector3 localUp = hit.normal;
                 Vector3 localForward = Vector3.Cross(localUp, Vector3.left);
                 Quaternion targetRot = Quaternion.AngleAxis(transform.eulerAngles.y, localUp) * Quaternion.LookRotation(localForward);
                 rightFootLocator.rotation = targetRot;
+            }
+
+            Ray leftFootRay = new Ray(transform.position + transform.rotation * _leftFootStartPos + Vector3.up, Vector3.down);
+            if (Physics.Raycast(leftFootRay, out hit))
+            {
+                leftFootLocator.position = hit.point + transform.rotation * Vector3.up * _leftFootStartPos.y;
+                leftFootLocator.position += maxFootUp * leftTrigger;
+
+                Vector3 localUp = hit.normal;
+                Vector3 localForward = Vector3.Cross(localUp, Vector3.left);
+                Quaternion targetRot = Quaternion.AngleAxis(transform.eulerAngles.y, localUp) * Quaternion.LookRotation(localForward);
+                leftFootLocator.rotation = targetRot;
             }
 
 
