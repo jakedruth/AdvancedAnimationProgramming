@@ -129,58 +129,71 @@ namespace AdvAnimation
 
             #region Handle Movement
 
+            // Calculate the current horizontal velocity based of the target velocity defined by the player input
             _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, rawInputLeft * maxSpeed, accelerationRate * Time.deltaTime);
-            
+
+            // Apply Gravity
             _verticalVelocity.y -= gravity * Time.deltaTime;
 
+            // check to see if the jump key is pressed
             if (jumpKeyDown)
             {
                 _verticalVelocity.y = jumpSpeed;
                 Debug.Log(_verticalVelocity.y);
             }
 
+            // Rotate the model if the raw input is greater than the dead zone
             if (rawInputLeft.sqrMagnitude >= DEAD_ZONE)
             {
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(_horizontalVelocity),
                     rotateSpeed * Time.deltaTime);
             }
 
+            // Apply the total velocity to the character controller (Unity Script/ Component)
             _characterController.Move((_horizontalVelocity + _verticalVelocity) * Time.deltaTime);
-            //transform.position += _horizontalVelocity * Time.deltaTime;
 
             #endregion
 
-            //float t = Mathf.PingPong(Time.time * 2, 1f);
-            //Vector3 delta = transform.rotation * new Vector3(0, 0.5f, 0.2f);
-            //rightFootLocator.position = transform.position + transform.rotation * _rightFootStartPos + Vector3.Lerp(Vector3.zero, delta, t); 
-            //leftFootLocator.position =  transform.position + transform.rotation * _leftFootStartPos + Vector3.Lerp(Vector3.zero, delta, 1 - t); 
-
+            #region Raycasting for the feet
+            
+            // Set a the max foot position relative
             Vector3 maxFootUp = new Vector3(0, 0.5f, 0);
 
+            // Ray cast from the right foot downwards
             Ray rightFootRay = new Ray(transform.position + transform.rotation * _rightFootStartPos + Vector3.up, Vector3.down);
             if (Physics.Raycast(rightFootRay, out RaycastHit hit))
             {
+                // set the right foot locator based on the hit
                 rightFootLocator.position = hit.point + transform.rotation * Vector3.up * _rightFootStartPos.y;
+
+                // Adjust the foot height based off the trigger
                 rightFootLocator.position += maxFootUp * rightTrigger;
 
+                // calculate a target rotation based off the Raycast Hit Normal
                 Vector3 localUp = hit.normal;
                 Vector3 localForward = Vector3.Cross(localUp, Vector3.left);
                 Quaternion targetRot = Quaternion.AngleAxis(transform.eulerAngles.y, localUp) * Quaternion.LookRotation(localForward);
                 rightFootLocator.rotation = targetRot;
             }
 
+            // Ray cast from the left foot downwards
             Ray leftFootRay = new Ray(transform.position + transform.rotation * _leftFootStartPos + Vector3.up, Vector3.down);
             if (Physics.Raycast(leftFootRay, out hit))
             {
+                // Set the left foot locator based on the hit
                 leftFootLocator.position = hit.point + transform.rotation * Vector3.up * _leftFootStartPos.y;
+                
+                // Adjust the foot height based off the trigger
                 leftFootLocator.position += maxFootUp * leftTrigger;
 
+                // calculate a target rotation based off the Raycast Hit Normal
                 Vector3 localUp = hit.normal;
                 Vector3 localForward = Vector3.Cross(localUp, Vector3.left);
                 Quaternion targetRot = Quaternion.AngleAxis(transform.eulerAngles.y, localUp) * Quaternion.LookRotation(localForward);
                 leftFootLocator.rotation = targetRot;
-            }
+            } 
 
+            #endregion
 
             #region Handle Head Look At
 
@@ -199,6 +212,7 @@ namespace AdvAnimation
                     : transform.position + transform.rotation * _startDeltaLookAtPoint;
             }
 
+            // lerp the head locator's position based on what the target is
             Vector3 pos = Vector3.Lerp(headLocator.position, _targetLookAt, 10 * Time.deltaTime);
             headLocator.position = pos;
             _proceduralLook.LookAt(headLocator.position);
@@ -207,6 +221,7 @@ namespace AdvAnimation
 
             #region Handle Grabing
 
+            // Calculate all of the IK for each hand and foot
             _proceduralRightArm.ResolveIK(rightHandLocator.position, rightHandLocator.rotation, rightHandConstraint.position);
             _proceduralLeftArm.ResolveIK( leftHandLocator.position,  leftHandLocator.rotation,  leftHandConstraint.position);
             _proceduralRightLeg.ResolveIK(rightFootLocator.position, rightFootLocator.rotation, rightFootConstraint.position);
@@ -220,6 +235,7 @@ namespace AdvAnimation
             Transform closest = null;
             float closestSqrDist = lookDist * lookDist;
 
+            // Look for the closest transform based off the list of objects to look at
             for (int i = 0; i < _lookObjects.Length; i++)
             {
                 Vector3 displacement = _lookObjects[i].transform.position - headBone.position;

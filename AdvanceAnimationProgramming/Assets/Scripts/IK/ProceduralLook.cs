@@ -6,8 +6,6 @@
 */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace AdvAnimation
@@ -22,13 +20,16 @@ namespace AdvAnimation
             if (lookBone == null)
                 throw new Exception("Look bone is null");
 
+            // get a reference to the bone that will be rotating
             this.lookBone = lookBone;
+
+            // get it's starting rotation
             _startRotation = lookBone.rotation;
         }
 
         public void LookAt(Vector3 point)
         {
-            Debug.DrawLine(lookBone.position, point);
+            //Debug.DrawLine(lookBone.position, point);
 
             // Get the look Direction
             Vector3 lookDisplacement = point - lookBone.position;
