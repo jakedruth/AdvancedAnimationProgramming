@@ -9,12 +9,15 @@ namespace AdvAnimation
     {
         // Input Variables
         private GamepadState _prevGamepadState;
+        private CharacterController _characterController;
 
         private const float DEAD_ZONE = 0.01f; // = 0.1 ^ 2
         [Header("Movement Variables")]
         public float maxSpeed;
         public float accelerationRate;
-        private Vector3 _velocity;
+        public float gravity;
+        private Vector3 _horizontalVelocity;
+        private Vector3 _verticalVelocity;
         public float rotateSpeed;
 
         private ProceduralLook _proceduralLook;
@@ -41,19 +44,29 @@ namespace AdvAnimation
         private ProceduralGrab _proceduralLeftArm;
 
         [Header("Right Leg")]
-        public Transform rightLeg;
-        public Transform rightLegLocator;
-        public Transform rightLegConstraint;
+        public Transform rightFoot;
+        public Transform rightFootLocator;
+        public Transform rightFootConstraint;
         private ProceduralGrab _proceduralRightLeg;
+        private Vector3 _rightFootStartPos;
+        private Quaternion _rightFootStartRotation;
 
+        [Header("Left Leg")]
+        public Transform leftFoot;
+        public Transform leftFootLocator;
+        public Transform leftFootConstraint;
+        private ProceduralGrab _proceduralLeftLeg;
+        private Vector3 _leftFootStartPos;
 
         [Range(0, 1)] public float snapBack;
 
         void Awake()
         {
+            _characterController = GetComponent<CharacterController>();
+
             // set default values
             // movement
-            _velocity = Vector3.zero;
+            _verticalVelocity = _horizontalVelocity = Vector3.zero;
 
             // procedural look variables
             _proceduralLook = new ProceduralLook(headBone);
@@ -63,7 +76,14 @@ namespace AdvAnimation
             // procedural grab variables
             _proceduralRightArm = new ProceduralGrab(rightHand, rightHandLocator, 2);
             _proceduralLeftArm  = new ProceduralGrab(leftHand,  leftHandLocator,  2);
-            _proceduralRightLeg = new ProceduralGrab(rightLeg,  rightLegLocator,  2);
+            _proceduralRightLeg = new ProceduralGrab(rightFoot, rightFootLocator, 2);
+            _proceduralLeftLeg  = new ProceduralGrab(leftFoot,  leftFootLocator,  2);
+
+            // Starting Locator Values
+            _rightFootStartPos = transform.InverseTransformPoint(rightFootLocator.position);
+            _rightFootStartRotation = transform.rotation * Quaternion.Inverse(rightFootLocator.rotation);
+            
+            _leftFootStartPos = transform.InverseTransformPoint(leftFootLocator.position);
         }
 
         // Start is called before the first frame update
@@ -108,17 +128,38 @@ namespace AdvAnimation
 
             #region Handle Movement
 
-            _velocity = Vector3.MoveTowards(_velocity, rawInputLeft * maxSpeed, accelerationRate * Time.deltaTime);
+            _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, rawInputLeft * maxSpeed, accelerationRate * Time.deltaTime);
+            if (!_characterController.isGrounded)
+                _verticalVelocity.y -= gravity * Time.deltaTime;
 
             if (rawInputLeft.sqrMagnitude >= DEAD_ZONE)
             {
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(_velocity),
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(_horizontalVelocity),
                     rotateSpeed * Time.deltaTime);
             }
 
-            transform.position += _velocity * Time.deltaTime;
+            _characterController.SimpleMove(_horizontalVelocity + _verticalVelocity);
+
+            //transform.position += _horizontalVelocity * Time.deltaTime;
 
             #endregion
+
+            //float t = Mathf.PingPong(Time.time * 2, 1f);
+            //Vector3 delta = transform.rotation * new Vector3(0, 0.5f, 0.2f);
+            //rightFootLocator.position = transform.position + transform.rotation * _rightFootStartPos + Vector3.Lerp(Vector3.zero, delta, t); 
+            //leftFootLocator.position =  transform.position + transform.rotation * _leftFootStartPos + Vector3.Lerp(Vector3.zero, delta, 1 - t); 
+
+            Ray rightFootRay = new Ray(transform.position + transform.rotation * _rightFootStartPos, Vector3.down);
+            if (Physics.Raycast(rightFootRay, out RaycastHit hit))
+            {
+                rightFootLocator.position = hit.point;
+                //Debug.Log(hit.normal);a
+                Vector3 localUp = hit.normal;
+                Vector3 localForward = Vector3.Cross(localUp, Vector3.left);
+                Quaternion targetRot = Quaternion.AngleAxis(transform.eulerAngles.y, localUp) * Quaternion.LookRotation(localForward);
+                rightFootLocator.rotation = targetRot;
+            }
+
 
             #region Handle Head Look At
 
@@ -145,10 +186,11 @@ namespace AdvAnimation
 
             #region Handle Grabing
 
-            //_proceduralRightArm.GrabAt(rightHandLocator.position, rightHandConstraint.position, _direction[direction]);
-            _proceduralRightArm.ResolveIK(rightHandLocator.position, rightHandLocator.rotation, rightHandConstraint.position, snapBack);
-            _proceduralLeftArm.ResolveIK( leftHandLocator.position,  leftHandLocator.rotation,  leftHandConstraint.position,  snapBack);
-            _proceduralRightLeg.ResolveIK(rightLegLocator.position,  rightLegLocator.rotation,  rightLegConstraint.position,  snapBack);
+            _proceduralRightArm.ResolveIK(rightHandLocator.position, rightHandLocator.rotation, rightHandConstraint.position);
+            _proceduralLeftArm.ResolveIK( leftHandLocator.position,  leftHandLocator.rotation,  leftHandConstraint.position);
+            _proceduralRightLeg.ResolveIK(rightFootLocator.position, rightFootLocator.rotation, rightFootConstraint.position);
+            _proceduralLeftLeg.ResolveIK( leftFootLocator.position,  leftFootLocator.rotation,  leftFootConstraint.position);
+
             #endregion
         }
 
@@ -178,12 +220,14 @@ namespace AdvAnimation
             Gizmos.DrawWireSphere(headLocator.position, size);
             Gizmos.DrawWireSphere(rightHandLocator.position, size);
             Gizmos.DrawWireSphere(leftHandLocator.position,  size);
-            Gizmos.DrawWireSphere(rightLegLocator.position,  size);
+            Gizmos.DrawWireSphere(rightFootLocator.position,  size);
+            Gizmos.DrawWireSphere(leftFootLocator.position,  size);
             
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(rightHandConstraint.position, Vector3.one * size);
             Gizmos.DrawWireCube(leftHandConstraint.position, Vector3.one * size);
-            Gizmos.DrawWireCube(rightLegConstraint.position, Vector3.one * size);
+            Gizmos.DrawWireCube(rightFootConstraint.position, Vector3.one * size);
+            Gizmos.DrawWireCube(leftFootConstraint.position, Vector3.one * size);
         }
 
 

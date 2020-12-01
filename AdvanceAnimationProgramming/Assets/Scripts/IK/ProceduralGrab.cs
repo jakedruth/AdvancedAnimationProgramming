@@ -77,7 +77,7 @@ public class ProceduralGrab
         }
     }
 
-    public void ResolveIK(Vector3 targetPosition, Quaternion targetRotation, Vector3 constraint, float snapBackStrength)
+    public void ResolveIK(Vector3 targetPosition, Quaternion targetRotation, Vector3 constraint)
     {
         if (boneLengths.Length != numAffectedParents)
             Init(targetPosition, targetRotation);
@@ -108,7 +108,9 @@ public class ProceduralGrab
         else // calculate IK
         {
             for (int i = 0; i < positions.Length - 1; i++)
-                positions[i + 1] = Vector3.Lerp(positions[i + 1], positions[i] + startDirections[i], snapBackStrength);
+            {
+                positions[i + 1] = positions[i] + startDirections[i];
+            }
 
             for (int iteration = 0; iteration < iterations; iteration++)
             {
