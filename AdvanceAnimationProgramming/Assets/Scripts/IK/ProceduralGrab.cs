@@ -168,17 +168,15 @@ namespace AdvAnimation
 
                 // Project the bone and the constraint onto a plane that is perpendicular to the direction from the previous and next bone
                 // Then, rotate the projected bone around the axis based of the angle between the projected points
-
-                Vector3 planeNormal = next - prev;
-                Plane plane = new Plane(planeNormal, prev);
-                Vector3 projectedConstraint = plane.ClosestPointOnPlane(constraint);//Vector3.ProjectOnPlane(constraint, planeNormal);
-                Vector3 projectedBone = plane.ClosestPointOnPlane(pos);// Vector3.ProjectOnPlane(pos, planeNormal);
+                Plane plane = new Plane(next - prev, prev);
+                Vector3 projectedConstraint = plane.ClosestPointOnPlane(constraint);
+                Vector3 projectedBone = plane.ClosestPointOnPlane(pos);
                 float angle = Vector3.SignedAngle(
                     projectedBone - prev,
                     projectedConstraint - prev,
-                    planeNormal);
+                    plane.normal);
 
-                _positions[i] = Quaternion.AngleAxis(angle, planeNormal) * (pos - prev) + prev;
+                _positions[i] = Quaternion.AngleAxis(angle, plane.normal) * (pos - prev) + prev;
             }
 
 
