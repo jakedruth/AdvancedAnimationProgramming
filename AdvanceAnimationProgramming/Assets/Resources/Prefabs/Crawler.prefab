@@ -232,7 +232,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 727918954816596604}
   m_LocalRotation: {x: -0.70719916, y: -0.00003761619, z: -0.0003838514, w: 0.7070144}
-  m_LocalPosition: {x: 0.39534885, y: 0.05466807, z: 0.3647548}
+  m_LocalPosition: {x: 0.54159003, y: 0.07489002, z: 0.49967915}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
@@ -655,6 +655,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -1176,6 +1177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -1420,6 +1422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -2367,6 +2370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -2777,6 +2781,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -3021,6 +3026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -3519,6 +3525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -3704,6 +3711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fdeab7548defa46ad7d7c8a1a8510e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentCount: 0
   footMaxDistance: 0.3
   overshootDistance: 0.2
   lerpSpeed: 20
@@ -4325,9 +4333,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b54b0a5d1b84e4ab151d9a27798862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
-  lerpSpeed: 20
   ikComponents:
   - {fileID: 76243480}
   - {fileID: 1541535951}
@@ -4337,8 +4342,6 @@ MonoBehaviour:
   - {fileID: 479471489}
   - {fileID: 234374397}
   - {fileID: 1335669710}
-  right1IK: {fileID: 7807412109767830459}
-  restPointRight1: {fileID: 991787326100930930}
 --- !u!1 &8728662867289720567
 GameObject:
   m_ObjectHideFlags: 0

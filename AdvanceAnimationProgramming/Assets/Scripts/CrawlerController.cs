@@ -11,10 +11,6 @@ namespace AdvAnimation
 
         private void Awake()
         {
-            for (int i = 0; i < ikComponents.Length; i++)
-            {
-                Debug.Log(ikComponents[i].locator.name);
-            }
         }
 
         private void Update()

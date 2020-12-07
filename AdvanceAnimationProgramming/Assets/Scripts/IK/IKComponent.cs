@@ -6,11 +6,13 @@ namespace AdvAnimation
 {
     public class IKComponent : MonoBehaviour
     {
+        public int parentCount = 2;
+
         public float footMaxDistance;
         public float overshootDistance;
         public float lerpSpeed;
 
-        public bool autoUpdate = true;
+        public bool autoUpdate;
         public Transform restPosition;
         public Transform locator;
         public Transform constraint;
@@ -20,7 +22,7 @@ namespace AdvAnimation
         // Start is called before the first frame update
         private void Start()
         {
-            _proceduralGrab = new ProceduralGrab(transform, locator, 2);
+            _proceduralGrab = new ProceduralGrab(transform, locator, parentCount);
             _targetPos = locator.position;
         }
 
