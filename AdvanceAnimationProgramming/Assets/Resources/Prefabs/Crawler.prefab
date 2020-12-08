@@ -629,10 +629,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 8793155951654092250}
   constraint: {fileID: 7512838090593993181}
@@ -1122,10 +1122,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 6227134565724897120}
   constraint: {fileID: 1810473323104491038}
@@ -1429,10 +1429,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 1050034158413289419}
   constraint: {fileID: 122023411132754599}
@@ -2380,10 +2380,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 6850011235073390841}
   constraint: {fileID: 4604768737472636912}
@@ -2822,10 +2822,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 5183699133882327478}
   constraint: {fileID: 1694990132195930169}
@@ -3068,10 +3068,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 536319437259891784}
   constraint: {fileID: 7843223110964388138}
@@ -3598,10 +3598,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 7807412109767830459}
   constraint: {fileID: 2521905351861518021}
@@ -3785,10 +3785,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.3
-  overshootDistance: 0.2
+  footMaxDistance: 0.15
+  overshootDistance: 0.12
   lerpSpeed: 20
-  moveDuration: 0.1
+  moveDuration: 0.2
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 1983523781978215053}
   constraint: {fileID: 7517775643745708832}
@@ -4370,26 +4370,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b54b0a5d1b84e4ab151d9a27798862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMoveSpeed: 4
+  maxMoveSpeed: 1
   moveAcceleration: 20
-  maxTurnSpeed: 180
+  changeHeightSpeed: 4
+  maxTurnSpeed: 90
   turnAcceleration: 720
   maxBodyRotate: 15
-  syncWithRight:
-  - {fileID: 76243480}
-  - {fileID: 479471489}
-  - {fileID: 515043486}
-  - {fileID: 1335669710}
-  syncWithLeft:
-  - {fileID: 1797071618}
-  - {fileID: 1541535951}
-  - {fileID: 234374397}
-  - {fileID: 1466003135}
-  ikComponents:
+  rightLegs:
   - {fileID: 76243480}
   - {fileID: 1541535951}
   - {fileID: 515043486}
   - {fileID: 1466003135}
+  leftLegs:
   - {fileID: 1797071618}
   - {fileID: 479471489}
   - {fileID: 234374397}

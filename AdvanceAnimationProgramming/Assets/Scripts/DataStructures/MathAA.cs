@@ -306,5 +306,38 @@ namespace AdvAnimation
                 vectors = next;
             }
         }
+
+        public static Quaternion GetRotationFromRaycastHitAndForward(RaycastHit hit, Vector3 forward)
+        {
+            Vector3 localUp = hit.normal;
+            Vector3 localRight = Vector3.Cross(localUp, forward);
+            Vector3 localForward = Vector3.Cross(localRight, localUp);
+
+            return GetRotationFromThreeAxis(localRight, localUp, localForward);
+        }
+
+        // Credit: https://forum.unity.com/threads/how-to-transform-forward-up-right-to-rotation.208863/
+        public static Quaternion GetRotationFromThreeAxis(Vector3 right, Vector3 up, Vector3 forward)
+        {
+            Matrix4x4 m = new Matrix4x4();
+            m.SetColumn(0, right);
+            m.SetColumn(1, up);
+            m.SetColumn(2, forward);
+
+            // Adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+            Quaternion q = new Quaternion
+            {
+                w = Mathf.Sqrt(Mathf.Max(0, 1 + m[0, 0] + m[1, 1] + m[2, 2])) / 2,
+                x = Mathf.Sqrt(Mathf.Max(0, 1 + m[0, 0] - m[1, 1] - m[2, 2])) / 2,
+                y = Mathf.Sqrt(Mathf.Max(0, 1 - m[0, 0] + m[1, 1] - m[2, 2])) / 2,
+                z = Mathf.Sqrt(Mathf.Max(0, 1 - m[0, 0] - m[1, 1] + m[2, 2])) / 2
+            };
+
+            q.x *= Mathf.Sign(q.x * (m[2, 1] - m[1, 2]));
+            q.y *= Mathf.Sign(q.y * (m[0, 2] - m[2, 0]));
+            q.z *= Mathf.Sign(q.z * (m[1, 0] - m[0, 1]));
+
+            return q;
+        }
     }
 }

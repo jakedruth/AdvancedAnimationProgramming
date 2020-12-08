@@ -16,6 +16,7 @@ namespace AdvAnimation
         public float maxMoveSpeed;
         public float moveAcceleration;
         private float _moveSpeed;
+        public float changeHeightSpeed;
 
         public float maxTurnSpeed;
         public float turnAcceleration;
@@ -46,6 +47,62 @@ namespace AdvAnimation
             }
 
             StartCoroutine(UpdateLegs());
+        }
+
+        private void Update()
+        {
+            #region Testing Raycasting
+
+            Vector3 pos = transform.position + transform.up * 0.3f;
+            Ray rayDown = new Ray(pos, -transform.up);
+            Ray rayForward = new Ray(pos, transform.forward);
+            //Debug.DrawRay(rayDown.origin, rayDown.direction, Color.red);
+            //Debug.DrawRay(rayForward.origin, rayForward.direction, Color.red);
+
+            Quaternion targetRot = transform.rotation;
+            Quaternion targetBodyRot = body.rotation;
+
+            if (Physics.Raycast(rayDown, out RaycastHit hitDown))
+            {
+                transform.position = hitDown.point;
+                Vector3 localUp = hitDown.normal;
+                Vector3 localRight = Vector3.Cross(localUp, transform.forward).normalized;
+                Vector3 localForward = Vector3.Cross(localRight, localUp).normalized;
+
+                targetRot = MathAA.GetRotationFromThreeAxis(localRight, localUp, localForward);
+
+                Debug.DrawRay(hitDown.point, localRight, Color.red);
+                Debug.DrawRay(hitDown.point, localUp, Color.green);
+                Debug.DrawRay(hitDown.point, localForward, Color.blue);
+
+                //if (Physics.Raycast(rayForward, out RaycastHit hitForward))
+                //{
+                //    Vector3 nextUp = hitForward.normal;
+                //    Vector3 nextRight = Vector3.Cross(nextUp, transform.forward).normalized;
+                //    Vector3 nextForward = Vector3.Cross(nextRight, nextUp).normalized;
+
+                //    Debug.DrawRay(hitForward.point, nextRight, Color.red);
+                //    Debug.DrawRay(hitForward.point, nextUp, Color.green);
+                //    Debug.DrawRay(hitForward.point, nextForward, Color.blue);
+
+                //    Vector3 avgUp      = ((localUp + nextUp) * 0.5f).normalized;
+                //    Vector3 avgRight   = ((localRight + nextRight) * 0.5f).normalized;
+                //    Vector3 avgForward = ((localForward + nextForward) * 0.5f).normalized;
+
+                //    Vector3 testRight = Vector3.Cross(avgUp, transform.forward).normalized;
+                //    Vector3 testForward = Vector3.Cross(testRight, avgUp).normalized;
+
+                //    if (hitForward.distance <= hitDown.distance * 2)
+                //        targetBodyRot = MathAA.GetRotationFromThreeAxis(avgRight, avgUp, testForward);
+                //}
+                //else
+                {
+                    targetBodyRot = MathAA.GetRotationFromThreeAxis(localRight, localUp, localForward);
+                }
+            }
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, maxTurnSpeed * Time.deltaTime);
+            #endregion
         }
 
         private void LateUpdate()
@@ -100,18 +157,18 @@ namespace AdvAnimation
             float targetTurn = rawLeftStick.x * maxTurnSpeed;
             _turnSpeed = Mathf.MoveTowards(_turnSpeed, targetTurn, turnAcceleration * Time.deltaTime);
             transform.Rotate(Vector3.up, _turnSpeed * Time.deltaTime);
-            transform.Rotate(Vector3.right, pitch);
+            //transform.Rotate(Vector3.right, pitch);
 
             // Body Test
             float angle = maxBodyRotate * _turnSpeed / maxTurnSpeed;
-            body.rotation = transform.rotation * Quaternion.AngleAxis(angle, Vector3.up) * _bodyStartLocal;
+            //body.Rotate(Vector3.up, angle);
 
             float deltaBodyHeightLerpValue = rightTrigger - leftTrigger;
             float targetHeight = deltaBodyHeightLerpValue > 0 
                 ? Mathf.Lerp(_bodyRestHeight, 0.8f, deltaBodyHeightLerpValue) 
                 : Mathf.Lerp(_bodyRestHeight, 0.2f, -deltaBodyHeightLerpValue);
 
-            _bodyHeight = Mathf.MoveTowards(_bodyHeight, targetHeight, maxMoveSpeed * Time.deltaTime);
+            _bodyHeight = Mathf.MoveTowards(_bodyHeight, targetHeight, changeHeightSpeed * Time.deltaTime);
 
             body.localPosition = Vector3.up * _bodyHeight;
 
