@@ -229,7 +229,7 @@ namespace GamepadInput
             state.Back = GetButton(Button.Back, controlIndex);
 
             state.LeftStickAxis = GetAxis(Axis.LeftStick, controlIndex, raw);
-            state.rightStickAxis = GetAxis(Axis.RightStick, controlIndex, raw);
+            state.RightStickAxis = GetAxis(Axis.RightStick, controlIndex, raw);
             state.dPadAxis = GetAxis(Axis.Dpad, controlIndex, raw);
 
             state.Left = (state.dPadAxis.x < 0);
@@ -263,7 +263,7 @@ namespace GamepadInput
         public bool LeftShoulder = false;
 
         public Vector2 LeftStickAxis = Vector2.zero;
-        public Vector2 rightStickAxis = Vector2.zero;
+        public Vector2 RightStickAxis = Vector2.zero;
         public Vector2 dPadAxis = Vector2.zero;
 
         public float LeftTrigger = 0;

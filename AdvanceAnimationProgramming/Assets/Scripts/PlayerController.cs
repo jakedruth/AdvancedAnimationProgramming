@@ -98,7 +98,7 @@ namespace AdvAnimation
 
             GamepadState current = GamePad.GetState(GamePad.Index.Any, true);
             Vector3 rawInputLeft = new Vector3(current.LeftStickAxis.x, 0, current.LeftStickAxis.y);
-            Vector3 rawInputRight = new Vector3(current.rightStickAxis.x, 0, current.rightStickAxis.y);
+            Vector3 rawInputRight = new Vector3(current.RightStickAxis.x, 0, current.RightStickAxis.y);
             float rightTrigger = current.RightTrigger;
             float leftTrigger = current.LeftTrigger;
             bool jumpKeyDown = current.A && !_prevGamepadState.A || Input.GetKeyDown(KeyCode.Space);

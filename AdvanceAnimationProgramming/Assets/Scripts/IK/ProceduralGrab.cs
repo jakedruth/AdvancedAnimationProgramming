@@ -23,6 +23,8 @@ namespace AdvAnimation
 
         public int iterations = 10;
         public float minDelta = 0.001f;
+        public delegate void OnOverExtended();
+        public OnOverExtended onOverExtended;
 
         private float[] _boneLengths;
         private float _totalBoneLength;
@@ -112,6 +114,8 @@ namespace AdvAnimation
 
             if (isTooFar)
             {
+                onOverExtended?.Invoke();
+
                 // just align all bones to face the target
                 Vector3 direction = (targetPosition - _positions[0]).normalized;
 

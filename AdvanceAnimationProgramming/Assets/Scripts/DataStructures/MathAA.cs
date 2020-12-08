@@ -289,5 +289,22 @@ namespace AdvAnimation
             j = (j + arr.Length) % arr.Length;
             return arr[j];
         }
+
+        public static Vector3 BezierCurve(float t, params Vector3[] vectors)
+        {
+            if (vectors.Length == 0) 
+                throw new Exception("The array must have a size >= 1");
+
+            while (true)
+            {
+                if (vectors.Length == 1) 
+                    return vectors[0];
+
+                Vector3[] next = new Vector3[vectors.Length - 1];
+                for (int i = 0; i < next.Length; i++) next[i] = (1 - t) * vectors[i] + t * vectors[i + 1];
+
+                vectors = next;
+            }
+        }
     }
 }
