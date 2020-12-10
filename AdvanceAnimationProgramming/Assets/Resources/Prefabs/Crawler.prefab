@@ -533,6 +533,36 @@ Transform:
   m_Father: {fileID: 3728243928649316393}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1438602312409506610
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3144851597764102443}
+  m_Layer: 0
+  m_Name: IK Tail Rest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3144851597764102443
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438602312409506610}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.3550682, z: -0.6168337}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8722914434343128209}
+  m_RootOrder: 18
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1493289822095048185
 GameObject:
   m_ObjectHideFlags: 0
@@ -629,10 +659,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 8793155951654092250}
   constraint: {fileID: 7512838090593993181}
@@ -1122,10 +1153,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 6227134565724897120}
   constraint: {fileID: 1810473323104491038}
@@ -1189,7 +1221,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2224862481632845923
 GameObject:
@@ -1331,7 +1363,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2792025432897411582
 GameObject:
@@ -1429,10 +1461,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 1050034158413289419}
   constraint: {fileID: 122023411132754599}
@@ -1465,7 +1498,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2907720688123918172
 GameObject:
@@ -1794,6 +1827,7 @@ GameObject:
   - component: {fileID: 9151794329909223461}
   - component: {fileID: 7725054860083371717}
   - component: {fileID: 673064950417498499}
+  - component: {fileID: 5011648307584069375}
   m_Layer: 0
   m_Name: Box04
   m_TagString: Untagged
@@ -1866,6 +1900,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5011648307584069375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3829509838923217302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b687b9196f64cb498ad61e30dfd3b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentCount: 2
+  rootSpace: {fileID: 8722914434343128209}
+  locator: {fileID: 8063065433814179415}
+  restTransform: {fileID: 3144851597764102443}
 --- !u!1 &3847034348147386595
 GameObject:
   m_ObjectHideFlags: 0
@@ -1894,7 +1944,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3917382210973388699
 GameObject:
@@ -2380,10 +2430,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 6850011235073390841}
   constraint: {fileID: 4604768737472636912}
@@ -2498,7 +2549,37 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 14
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4538139313979156607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8063065433814179415}
+  m_Layer: 0
+  m_Name: TailLocator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8063065433814179415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4538139313979156607}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.3550682, z: -0.8668337}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8722914434343128209}
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4548650788181518796
 GameObject:
@@ -2822,10 +2903,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 5183699133882327478}
   constraint: {fileID: 1694990132195930169}
@@ -2858,7 +2940,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5024985063499715731
 GameObject:
@@ -3068,10 +3150,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 536319437259891784}
   constraint: {fileID: 7843223110964388138}
@@ -3470,7 +3553,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7309387053567974913
 GameObject:
@@ -3500,7 +3583,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8722914434343128209}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7500924727208385177
 GameObject:
@@ -3598,10 +3681,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 7807412109767830459}
   constraint: {fileID: 2521905351861518021}
@@ -3785,10 +3869,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentCount: 2
-  footMaxDistance: 0.15
-  overshootDistance: 0.12
-  lerpSpeed: 20
-  moveDuration: 0.2
+  footMaxDistance: 0.5
+  overshootDistance: 0.4
+  minMoveDuration: 0.15
+  maxMoveDuration: 0.35
+  stepHeight: 1
   rootSpace: {fileID: 8722914434343128209}
   locator: {fileID: 1983523781978215053}
   constraint: {fileID: 7517775643745708832}
@@ -4347,6 +4432,7 @@ Transform:
   - {fileID: 6850011235073390841}
   - {fileID: 1983523781978215053}
   - {fileID: 6227134565724897120}
+  - {fileID: 8063065433814179415}
   - {fileID: 4015954048504770282}
   - {fileID: 2409755967842736916}
   - {fileID: 8267937189805193577}
@@ -4355,6 +4441,7 @@ Transform:
   - {fileID: 2864779164217156511}
   - {fileID: 8405643208299492746}
   - {fileID: 2029728754219919589}
+  - {fileID: 3144851597764102443}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

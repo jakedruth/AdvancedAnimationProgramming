@@ -23,7 +23,7 @@ namespace AdvAnimation
 
         public int iterations = 10;
         public float minDelta = 0.001f;
-        public delegate void OnOverExtended();
+        public delegate void OnOverExtended(float t);
         public OnOverExtended onOverExtended;
 
         private float[] _boneLengths;
@@ -33,7 +33,8 @@ namespace AdvAnimation
         private Vector3[] _startDirections;
         private Quaternion[] _startRotationBones;
         private Quaternion _startRotationTarget;
-        private Transform _relativeRoot;
+        
+        internal Transform relativeRoot;
 
         public ProceduralGrab(Transform endBone, Transform locator, int numAffectedParents)
         {
@@ -53,11 +54,11 @@ namespace AdvAnimation
             _startRotationBones = new Quaternion[numAffectedParents + 1];
 
             // find the root bone relative to the number of parents from the end bone
-            _relativeRoot = endBone;
+            relativeRoot = endBone;
             for (int i = 0; i <= numAffectedParents; i++)
             {
-                _relativeRoot = _relativeRoot.parent;
-                if (_relativeRoot == null)
+                relativeRoot = relativeRoot.parent;
+                if (relativeRoot == null)
                     throw new Exception("The number of parents is longer the amount of available parents");
             }
 
@@ -114,7 +115,7 @@ namespace AdvAnimation
 
             if (isTooFar)
             {
-                onOverExtended?.Invoke();
+                onOverExtended?.Invoke(0);
 
                 // just align all bones to face the target
                 Vector3 direction = (targetPosition - _positions[0]).normalized;
@@ -206,22 +207,22 @@ namespace AdvAnimation
 
         private Vector3 GetPositionInRootSpace(Vector3 position)
         {
-            return Quaternion.Inverse(_relativeRoot.rotation) * (position - _relativeRoot.position);
+            return Quaternion.Inverse(relativeRoot.rotation) * (position - relativeRoot.position);
         }
 
         private void SetBonePositionInRootSpace(Transform bone, Vector3 position)
         {
-            bone.position = _relativeRoot.rotation * position + _relativeRoot.position;
+            bone.position = relativeRoot.rotation * position + relativeRoot.position;
         }
 
         private Quaternion GetRotationInRootSpace(Quaternion rotation)
         {
-            return Quaternion.Inverse(rotation) * _relativeRoot.rotation;
+            return Quaternion.Inverse(rotation) * relativeRoot.rotation;
         }
 
         private void SetBoneRotationInRootSpace(Transform bone, Quaternion rotation)
         {
-            bone.rotation = _relativeRoot.rotation * rotation;
+            bone.rotation = relativeRoot.rotation * rotation;
         }
     }
 }

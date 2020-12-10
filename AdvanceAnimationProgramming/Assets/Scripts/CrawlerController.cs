@@ -16,17 +16,21 @@ namespace AdvAnimation
         public float maxMoveSpeed;
         public float moveAcceleration;
         private float _moveSpeed;
+        private float _moveSpeedParameter;
+
         public float changeHeightSpeed;
 
         public float maxTurnSpeed;
         public float turnAcceleration;
         public float maxBodyRotate;
         private float _turnSpeed;
-        public IKComponent[] rightLegs;
-        public IKComponent[] leftLegs;
-        private IKComponent[] _ikComponents;
+        private float _turnSpeedParameter;
+
+        public IKLeg[] rightLegs;
+        public IKLeg[] leftLegs;
+        private IKLeg[] _ikComponents;
         public Transform body;
-        private Quaternion _bodyStartLocal;
+        private Quaternion _bodyStartRotation;
         private float _bodyRestHeight;
         private float _bodyHeight;
 
@@ -34,16 +38,17 @@ namespace AdvAnimation
 
         private void Awake()
         {
-            _ikComponents = new IKComponent[rightLegs.Length + leftLegs.Length];
+            _ikComponents = new IKLeg[rightLegs.Length + leftLegs.Length];
             Array.Copy(rightLegs, _ikComponents, rightLegs.Length);
             Array.Copy(leftLegs, 0, _ikComponents, rightLegs.Length, leftLegs.Length);
 
-            _bodyStartLocal = body.localRotation;
+            _bodyStartRotation = body.rotation;
             _bodyHeight = _bodyRestHeight = body.localPosition.y;
 
             for (int i = 0; i < 8; i++)
             {
-                _ikComponents[i].locator.position += Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.right * 0.05f;
+                _ikComponents[i].locator.position +=
+                    Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.right * 0.05f;
             }
 
             StartCoroutine(UpdateLegs());
@@ -53,28 +58,48 @@ namespace AdvAnimation
         {
             #region Testing Raycasting
 
+            transform.rotation.Normalize();
+
             Vector3 pos = transform.position + transform.up * 0.3f;
             Ray rayDown = new Ray(pos, -transform.up);
             Ray rayForward = new Ray(pos, transform.forward);
+
+            Vector3 moveDirection = transform.forward * _moveSpeedParameter;
+
+            Ray rayGroundInFront = new Ray(pos, -transform.up + moveDirection * 0.5f);
             //Debug.DrawRay(rayDown.origin, rayDown.direction, Color.red);
             //Debug.DrawRay(rayForward.origin, rayForward.direction, Color.red);
 
             Quaternion targetRot = transform.rotation;
             Quaternion targetBodyRot = body.rotation;
 
-            if (Physics.Raycast(rayDown, out RaycastHit hitDown))
+            if (Physics.Raycast(rayDown, out RaycastHit hit, 1f))
             {
-                transform.position = hitDown.point;
-                Vector3 localUp = hitDown.normal;
-                Vector3 localRight = Vector3.Cross(localUp, transform.forward).normalized;
-                Vector3 localForward = Vector3.Cross(localRight, localUp).normalized;
+                transform.position = hit.point;
+                if (Physics.Raycast(rayGroundInFront, out RaycastHit hitDown))
+                {
+                    hit = hitDown;
+                }
 
-                targetRot = MathAA.GetRotationFromThreeAxis(localRight, localUp, localForward);
+                Vector3 hitUp = hit.normal.normalized;
+                Vector3 hitRight = Vector3.Cross(hitUp, transform.forward).normalized;
+                Vector3 hitForward = Vector3.Cross(hitRight, hitUp).normalized;
 
-                Debug.DrawRay(hitDown.point, localRight, Color.red);
-                Debug.DrawRay(hitDown.point, localUp, Color.green);
-                Debug.DrawRay(hitDown.point, localForward, Color.blue);
+                Debug.DrawRay(hit.point, hitRight, Color.red);
+                Debug.DrawRay(hit.point, hitUp, Color.green);
+                Debug.DrawRay(hit.point, hitForward, Color.blue);
 
+                Debug.DrawRay(hit.point, transform.right, Color.magenta);
+                Debug.DrawRay(hit.point, transform.up, Color.yellow);
+                Debug.DrawRay(hit.point, transform.forward, Color.cyan);
+
+                targetRot = MathAA.GetRotationFromThreeAxis(hitRight, hitUp, hitForward);
+
+                //targetRot = MathAA.GetRotationFromThreeAxis(
+                //    ((hitRight + transform.right) * 0.5f).normalized, 
+                //    ((hitUp + transform.up) * 0.5f).normalized, 
+                //    ((hitForward + transform.forward) *0.5f).normalized);
+                
                 //if (Physics.Raycast(rayForward, out RaycastHit hitForward))
                 //{
                 //    Vector3 nextUp = hitForward.normal;
@@ -96,12 +121,13 @@ namespace AdvAnimation
                 //        targetBodyRot = MathAA.GetRotationFromThreeAxis(avgRight, avgUp, testForward);
                 //}
                 //else
-                {
-                    targetBodyRot = MathAA.GetRotationFromThreeAxis(localRight, localUp, localForward);
-                }
+                
+                targetBodyRot = MathAA.GetRotationFromThreeAxis(hitRight, hitUp, hitForward);
             }
 
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, maxTurnSpeed * Time.deltaTime);
+            float rotateStep = Mathf.Abs(_moveSpeedParameter) * maxTurnSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotateStep);
+            //body.rotation =  transform.rotation * targetBodyRot * Quaternion.Inverse(transform.rotation) * _bodyStartRotation;
             #endregion
         }
 
@@ -151,22 +177,29 @@ namespace AdvAnimation
             // Movement
             float targetSpeed = rawLeftStick.z * maxMoveSpeed;
             _moveSpeed = Mathf.MoveTowards(_moveSpeed, targetSpeed, moveAcceleration * Time.deltaTime);
+            _moveSpeedParameter = _moveSpeed / maxMoveSpeed;
             transform.position += transform.forward * _moveSpeed * Time.deltaTime;
 
             // Rotation
             float targetTurn = rawLeftStick.x * maxTurnSpeed;
             _turnSpeed = Mathf.MoveTowards(_turnSpeed, targetTurn, turnAcceleration * Time.deltaTime);
-            transform.Rotate(Vector3.up, _turnSpeed * Time.deltaTime);
+            _turnSpeedParameter = _turnSpeed / maxTurnSpeed;
+            float alpha = _turnSpeed * Time.deltaTime;
+            //transform.rotation *= Quaternion.AngleAxis(alpha, Vector3.up);
+            //transform.rotation = Quaternion.AngleAxis(alpha, transform.up) * transform.rotation;
+            transform.Rotate(Vector3.up, alpha);
             //transform.Rotate(Vector3.right, pitch);
 
             // Body Test
-            float angle = maxBodyRotate * _turnSpeed / maxTurnSpeed;
-            //body.Rotate(Vector3.up, angle);
+            float beta = maxBodyRotate * _turnSpeedParameter;
+            //body.Rotate(Vector3.up, beta);
 
-            float deltaBodyHeightLerpValue = rightTrigger - leftTrigger;
+            float deltaBodyHeightLerpValue = Mathf.Clamp(rightTrigger - leftTrigger + 0.1f * Mathf.Sin(Time.time), -1, 1);
             float targetHeight = deltaBodyHeightLerpValue > 0 
                 ? Mathf.Lerp(_bodyRestHeight, 0.8f, deltaBodyHeightLerpValue) 
                 : Mathf.Lerp(_bodyRestHeight, 0.2f, -deltaBodyHeightLerpValue);
+
+            //targetHeight += 0.1f * Mathf.Sin(Time.time / 3);
 
             _bodyHeight = Mathf.MoveTowards(_bodyHeight, targetHeight, changeHeightSpeed * Time.deltaTime);
 
@@ -178,7 +211,7 @@ namespace AdvAnimation
 
             for (int i = 0; i < _ikComponents.Length; i++)
             {
-                _ikComponents[i].TryMove(false);
+                _ikComponents[i].TryMove(_moveSpeedParameter, _turnSpeedParameter);
                 _ikComponents[i].UpdateIK(Time.deltaTime);
             }
 

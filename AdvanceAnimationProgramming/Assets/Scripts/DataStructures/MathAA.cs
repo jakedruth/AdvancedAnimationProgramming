@@ -307,16 +307,16 @@ namespace AdvAnimation
             }
         }
 
-        public static Quaternion GetRotationFromRaycastHitAndForward(RaycastHit hit, Vector3 forward)
+        public static Quaternion GetRotationFromRaycastHitAndForward(RaycastHit hit, Vector3 relativeForward)
         {
-            Vector3 localUp = hit.normal;
-            Vector3 localRight = Vector3.Cross(localUp, forward);
-            Vector3 localForward = Vector3.Cross(localRight, localUp);
+            Vector3 up = hit.normal.normalized;
+            Vector3 right = Vector3.Cross(up, relativeForward).normalized;
+            Vector3 forward = Vector3.Cross(right, up).normalized;
 
-            return GetRotationFromThreeAxis(localRight, localUp, localForward);
+            return GetRotationFromThreeAxis(right, up, forward);
         }
 
-        // Credit: https://forum.unity.com/threads/how-to-transform-forward-up-right-to-rotation.208863/
+        // Credit: https://forum.unity.com/threads/how-to-transform-relativeForward-up-right-to-rotation.208863/
         public static Quaternion GetRotationFromThreeAxis(Vector3 right, Vector3 up, Vector3 forward)
         {
             Matrix4x4 m = new Matrix4x4();
@@ -337,7 +337,7 @@ namespace AdvAnimation
             q.y *= Mathf.Sign(q.y * (m[0, 2] - m[2, 0]));
             q.z *= Mathf.Sign(q.z * (m[1, 0] - m[0, 1]));
 
-            return q;
+            return q.normalized;
         }
     }
 }
