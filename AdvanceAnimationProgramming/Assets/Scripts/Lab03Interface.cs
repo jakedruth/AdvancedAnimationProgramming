@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    Lab03Interface.cs - Interface for Lab 03. 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

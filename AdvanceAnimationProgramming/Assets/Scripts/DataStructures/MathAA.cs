@@ -292,8 +292,8 @@ namespace AdvAnimation
 
         public static Vector3 BezierCurve(float t, params Vector3[] vectors)
         {
-            if (vectors.Length == 0) 
-                throw new Exception("The array must have a size >= 1");
+            if (vectors.Length == 0)
+                throw new ArgumentException("Value cannot be an empty collection.", nameof(vectors));
 
             while (true)
             {

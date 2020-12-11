@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    CrawlerController.cs - The controller for my Crawler/ spider
+*/
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
@@ -38,96 +45,63 @@ namespace AdvAnimation
 
         private void Awake()
         {
+            // Combine right and left legs into one array
             _ikComponents = new IKLeg[rightLegs.Length + leftLegs.Length];
             Array.Copy(rightLegs, _ikComponents, rightLegs.Length);
             Array.Copy(leftLegs, 0, _ikComponents, rightLegs.Length, leftLegs.Length);
 
+            // Record important starting data
             _bodyStartRotation = body.rotation;
             _bodyHeight = _bodyRestHeight = body.localPosition.y;
-
-            for (int i = 0; i < 8; i++)
-            {
-                _ikComponents[i].locator.position +=
-                    Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.right * 0.05f;
-            }
-
-            StartCoroutine(UpdateLegs());
         }
 
         private void Update()
         {
-            #region Testing Raycasting
+            #region Body Rotation
 
             transform.rotation.Normalize();
 
+            // Create rays originating from the body
             Vector3 pos = transform.position + transform.up * 0.3f;
             Ray rayDown = new Ray(pos, -transform.up);
-            Ray rayForward = new Ray(pos, transform.forward);
-
             Vector3 moveDirection = transform.forward * _moveSpeedParameter;
 
             Ray rayGroundInFront = new Ray(pos, -transform.up + moveDirection * 0.5f);
-            //Debug.DrawRay(rayDown.origin, rayDown.direction, Color.red);
-            //Debug.DrawRay(rayForward.origin, rayForward.direction, Color.red);
 
+            // Create a copy of the current rotation
             Quaternion targetRot = transform.rotation;
-            Quaternion targetBodyRot = body.rotation;
 
             if (Physics.Raycast(rayDown, out RaycastHit hit, 1f))
             {
+                // Adjust the position of the Crawler to the raycast
                 transform.position = hit.point;
                 if (Physics.Raycast(rayGroundInFront, out RaycastHit hitDown))
                 {
                     hit = hitDown;
                 }
 
+                // Calculate an up, right, and forward axis based of the raycast hit's surface
                 Vector3 hitUp = hit.normal.normalized;
                 Vector3 hitRight = Vector3.Cross(hitUp, transform.forward).normalized;
                 Vector3 hitForward = Vector3.Cross(hitRight, hitUp).normalized;
 
+                // Render new axis for debugging
                 Debug.DrawRay(hit.point, hitRight, Color.red);
                 Debug.DrawRay(hit.point, hitUp, Color.green);
                 Debug.DrawRay(hit.point, hitForward, Color.blue);
 
+                // Render the current 3 axis for debugging
                 Debug.DrawRay(hit.point, transform.right, Color.magenta);
                 Debug.DrawRay(hit.point, transform.up, Color.yellow);
                 Debug.DrawRay(hit.point, transform.forward, Color.cyan);
 
+                // Calculate a quaternion from a right up and forward axis
                 targetRot = MathAA.GetRotationFromThreeAxis(hitRight, hitUp, hitForward);
-
-                //targetRot = MathAA.GetRotationFromThreeAxis(
-                //    ((hitRight + transform.right) * 0.5f).normalized, 
-                //    ((hitUp + transform.up) * 0.5f).normalized, 
-                //    ((hitForward + transform.forward) *0.5f).normalized);
-                
-                //if (Physics.Raycast(rayForward, out RaycastHit hitForward))
-                //{
-                //    Vector3 nextUp = hitForward.normal;
-                //    Vector3 nextRight = Vector3.Cross(nextUp, transform.forward).normalized;
-                //    Vector3 nextForward = Vector3.Cross(nextRight, nextUp).normalized;
-
-                //    Debug.DrawRay(hitForward.point, nextRight, Color.red);
-                //    Debug.DrawRay(hitForward.point, nextUp, Color.green);
-                //    Debug.DrawRay(hitForward.point, nextForward, Color.blue);
-
-                //    Vector3 avgUp      = ((localUp + nextUp) * 0.5f).normalized;
-                //    Vector3 avgRight   = ((localRight + nextRight) * 0.5f).normalized;
-                //    Vector3 avgForward = ((localForward + nextForward) * 0.5f).normalized;
-
-                //    Vector3 testRight = Vector3.Cross(avgUp, transform.forward).normalized;
-                //    Vector3 testForward = Vector3.Cross(testRight, avgUp).normalized;
-
-                //    if (hitForward.distance <= hitDown.distance * 2)
-                //        targetBodyRot = MathAA.GetRotationFromThreeAxis(avgRight, avgUp, testForward);
-                //}
-                //else
-                
-                targetBodyRot = MathAA.GetRotationFromThreeAxis(hitRight, hitUp, hitForward);
             }
 
             float rotateStep = Mathf.Abs(_moveSpeedParameter) * maxTurnSpeed * Time.deltaTime;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotateStep);
-            //body.rotation =  transform.rotation * targetBodyRot * Quaternion.Inverse(transform.rotation) * _bodyStartRotation;
+
             #endregion
         }
 
@@ -141,12 +115,6 @@ namespace AdvAnimation
             Vector3 rawRightStick = new Vector3(current.RightStickAxis.x, 0, current.RightStickAxis.y);
             float leftTrigger = current.LeftTrigger;
             float rightTrigger = current.RightTrigger;
-
-            float pitch = 0;
-            if (current.RightShoulder)
-                pitch -= maxTurnSpeed * Time.deltaTime;
-            if (current.LeftShoulder)
-                pitch += maxTurnSpeed * Time.deltaTime;
 
             // Adjust Inputs from keyboard Inputs
             if (Input.GetKey(KeyCode.A))
@@ -162,7 +130,7 @@ namespace AdvAnimation
             if (Input.GetKey(KeyCode.E))
                 rightTrigger += 1;
 
-            // Clamp needed values between 0 and 1
+            // Clamp necessary values
             rawLeftStick = Vector3.ClampMagnitude(rawLeftStick, 1);
             leftTrigger = Mathf.Clamp01(leftTrigger);
             rightTrigger = Mathf.Clamp01(rightTrigger);
@@ -185,21 +153,18 @@ namespace AdvAnimation
             _turnSpeed = Mathf.MoveTowards(_turnSpeed, targetTurn, turnAcceleration * Time.deltaTime);
             _turnSpeedParameter = _turnSpeed / maxTurnSpeed;
             float alpha = _turnSpeed * Time.deltaTime;
+
+            // The following 4 lines do the same thing. Testing to see if something would change
             //transform.rotation *= Quaternion.AngleAxis(alpha, Vector3.up);
             //transform.rotation = Quaternion.AngleAxis(alpha, transform.up) * transform.rotation;
             transform.Rotate(Vector3.up, alpha);
             //transform.Rotate(Vector3.right, pitch);
 
-            // Body Test
-            float beta = maxBodyRotate * _turnSpeedParameter;
-            //body.Rotate(Vector3.up, beta);
-
-            float deltaBodyHeightLerpValue = Mathf.Clamp(rightTrigger - leftTrigger + 0.1f * Mathf.Sin(Time.time), -1, 1);
+            // Calculate the body's height displacement
+            float deltaBodyHeightLerpValue = Mathf.Clamp(rightTrigger - leftTrigger + 0.1f * Mathf.Sin(Time.time), -1, 1); // Sine fuction adds a little bob animation
             float targetHeight = deltaBodyHeightLerpValue > 0 
-                ? Mathf.Lerp(_bodyRestHeight, 0.8f, deltaBodyHeightLerpValue) 
-                : Mathf.Lerp(_bodyRestHeight, 0.2f, -deltaBodyHeightLerpValue);
-
-            //targetHeight += 0.1f * Mathf.Sin(Time.time / 3);
+                ? Mathf.Lerp(_bodyRestHeight, 0.8f, deltaBodyHeightLerpValue)   // Values of 0.8 and 0.2 were chosen as they looked good
+                : Mathf.Lerp(_bodyRestHeight, 0.2f, -deltaBodyHeightLerpValue); // Should probably move them to fields
 
             _bodyHeight = Mathf.MoveTowards(_bodyHeight, targetHeight, changeHeightSpeed * Time.deltaTime);
 
@@ -215,53 +180,7 @@ namespace AdvAnimation
                 _ikComponents[i].UpdateIK(Time.deltaTime);
             }
 
-            //for (int i = 0; i < rightLegs.Length; i++)
-            //{
-            //    if (i % 2 == 0)
-            //    {
-            //        if (flip)
-            //            rightLegs[i].TryMove(leftLegs[i].IsMoving);
-            //        else 
-            //            leftLegs[i].TryMove(rightLegs[i].IsMoving);
-            //    }
-            //    else
-            //    {
-            //        if (flip)
-            //            leftLegs[i].TryMove(rightLegs[i].IsMoving);
-            //        else rightLegs[i].TryMove(leftLegs[i].IsMoving);
-            //    }
-            //}
-
-            flip = !flip;
-
             #endregion
-        }
-
-        IEnumerator UpdateLegs()
-        {
-            yield return null;
-            //while (true)
-            //{
-            //    do
-            //    {
-            //        for (int i = 0; i < rightLegs.Length; i++)
-            //        {
-            //            rightLegs[i].UpdateComponent(Time.deltaTime);
-            //        }
-
-            //        yield return null;
-            //    } while (rightLegs[0].IsMoving);
-
-            //    do
-            //    {
-            //        for (int i = 0; i < leftLegs.Length; i++)
-            //        {
-            //            leftLegs[i].UpdateComponent(Time.deltaTime);
-            //        }
-
-            //        yield return null;
-            //    } while (leftLegs[0].IsMoving);
-            //}
         }
     }
 }

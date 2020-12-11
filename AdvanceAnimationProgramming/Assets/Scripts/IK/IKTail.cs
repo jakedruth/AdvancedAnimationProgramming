@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    IKTail.cs - Script that is used to control the spider's tail
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,20 +30,25 @@ namespace AdvAnimation
 
         void Update()
         {
+            // Find the position above the ground that the tail can rest at
             Ray ray = new Ray(restTransform.position + restTransform.up, -restTransform.up);
-            Debug.DrawRay(ray.origin, ray.direction, Color.red);
+            float debugHitDistance = 2;
             Vector3 pos = restTransform.position;
             Quaternion targetRot = locator.rotation;
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
+                debugHitDistance = hit.distance;
                 pos = hit.point - ray.direction * _height;
                 targetRot = MathAA.GetRotationFromRaycastHitAndForward(hit, restTransform.forward);
             }
 
+            Debug.DrawLine(ray.origin, ray.GetPoint(debugHitDistance), Color.red);
+
+            // move the locator 
             locator.position = Vector3.MoveTowards(locator.position, pos, 1.0f * Time.deltaTime);
             locator.rotation = Quaternion.RotateTowards(locator.rotation, targetRot, 90f * Time.deltaTime);
 
-            _proceduralGrab.ResolveIK(locator.position, locator.rotation, rootSpace.up);
+            _proceduralGrab.ResolveIK(locator.position, locator.rotation, locator.position + rootSpace.up);
         }
     }
 }

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+	Advanced Animation Programming
+	By Jake Ruth
+
+    PlayerController.cs - Controller for a person
+*/
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
@@ -266,7 +273,5 @@ namespace AdvAnimation
             Gizmos.DrawWireCube(rightFootConstraint.position, Vector3.one * size);
             Gizmos.DrawWireCube(leftFootConstraint.position, Vector3.one * size);
         }
-
-
     }
 }
