@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AdvAnimation
 {
@@ -289,6 +290,12 @@ namespace AdvAnimation
                 default:
                     throw new ArgumentOutOfRangeException(nameof(evaluationType), evaluationType, null);
             }
+        }
+
+        public static float BlendControllerEvaluations(ClipController a, ClipController b,
+            EvaluationType evaluationType, float t)
+        {
+            return Mathf.Lerp(a.Evaluate(evaluationType), b.Evaluate(evaluationType), t);
         }
     }
 }
