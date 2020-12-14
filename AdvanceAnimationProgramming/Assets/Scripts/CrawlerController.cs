@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
+using Unity.Profiling;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -26,6 +27,7 @@ namespace AdvAnimation
         private float _moveSpeedParameter;
 
         public float changeHeightSpeed;
+        public float heightBobDuration;
 
         public float maxTurnSpeed;
         public float turnAcceleration;
@@ -41,7 +43,8 @@ namespace AdvAnimation
         private float _bodyRestHeight;
         private float _bodyHeight;
 
-        private bool flip;
+        private ClipController _clipControllerHigh;
+        private ClipController _clipControllerLow;
 
         private void Awake()
         {
@@ -53,60 +56,36 @@ namespace AdvAnimation
             // Record important starting data
             _bodyStartRotation = body.rotation;
             _bodyHeight = _bodyRestHeight = body.localPosition.y;
+
+            CreateClip();
+        }
+
+        private void CreateClip()
+        {
+            KeyframePool keyframePool = new KeyframePool(
+                new Keyframe(0.0f, heightBobDuration / 2, 0.2f),
+                new Keyframe(heightBobDuration / 2, heightBobDuration, 0.4f),
+                new Keyframe(0.0f, heightBobDuration / 2, 0.6f),
+                new Keyframe(heightBobDuration / 2, heightBobDuration, 0.8f));
+
+            Clip clipHigh = new Clip("Idle-High", keyframePool, 2, 3, new Transition(TransitionType.FORWARD), new Transition(TransitionType.BACKWARD));
+            Clip clipLow  = new Clip("Idle-Low",  keyframePool, 0, 1, new Transition(TransitionType.FORWARD), new Transition(TransitionType.BACKWARD));
+            ClipPool clipPool = new ClipPool(clipHigh, clipLow);
+            _clipControllerHigh = new ClipController("Spider High Controller", clipPool, 0);
+            _clipControllerLow  = new ClipController("Spider Low Controller", clipPool, 1);
         }
 
         private void Update()
         {
-            #region Body Rotation
+            #region Update Clip Controllers
 
-            transform.rotation.Normalize();
+            //float dilation = 0.2f + Mathf.Clamp01(_moveSpeedParameter + _turnSpeedParameter) * 0.8f;
 
-            // Create rays originating from the body
-            Vector3 pos = transform.position + transform.up * 0.3f;
-            Ray rayDown = new Ray(pos, -transform.up);
-            Vector3 moveDirection = transform.forward * _moveSpeedParameter;
-
-            Ray rayGroundInFront = new Ray(pos, -transform.up + moveDirection * 0.5f);
-
-            // Create a copy of the current rotation
-            Quaternion targetRot = transform.rotation;
-
-            if (Physics.Raycast(rayDown, out RaycastHit hit, 1f))
-            {
-                // Adjust the position of the Crawler to the raycast
-                transform.position = hit.point;
-                if (Physics.Raycast(rayGroundInFront, out RaycastHit hitDown))
-                {
-                    hit = hitDown;
-                }
-
-                // Calculate an up, right, and forward axis based of the raycast hit's surface
-                Vector3 hitUp = hit.normal.normalized;
-                Vector3 hitRight = Vector3.Cross(hitUp, transform.forward).normalized;
-                Vector3 hitForward = Vector3.Cross(hitRight, hitUp).normalized;
-
-                // Render new axis for debugging
-                Debug.DrawRay(hit.point, hitRight, Color.red);
-                Debug.DrawRay(hit.point, hitUp, Color.green);
-                Debug.DrawRay(hit.point, hitForward, Color.blue);
-
-                // Render the current 3 axis for debugging
-                Debug.DrawRay(hit.point, transform.right, Color.magenta);
-                Debug.DrawRay(hit.point, transform.up, Color.yellow);
-                Debug.DrawRay(hit.point, transform.forward, Color.cyan);
-
-                // Calculate a quaternion from a right up and forward axis
-                targetRot = MathAA.GetRotationFromThreeAxis(hitRight, hitUp, hitForward);
-            }
-
-            float rotateStep = Mathf.Abs(_moveSpeedParameter) * maxTurnSpeed * Time.deltaTime;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotateStep);
+            _clipControllerHigh.Update(Time.deltaTime);
+            _clipControllerLow.Update(Time.deltaTime);
 
             #endregion
-        }
 
-        private void LateUpdate()
-        {
             #region Get Input
 
             // Get Controller Inputs
@@ -161,16 +140,71 @@ namespace AdvAnimation
             //transform.Rotate(Vector3.right, pitch);
 
             // Calculate the body's height displacement
-            float deltaBodyHeightLerpValue = Mathf.Clamp(rightTrigger - leftTrigger + 0.1f * Mathf.Sin(Time.time), -1, 1); // Sine fuction adds a little bob animation
-            float targetHeight = deltaBodyHeightLerpValue > 0 
-                ? Mathf.Lerp(_bodyRestHeight, 0.8f, deltaBodyHeightLerpValue)   // Values of 0.8 and 0.2 were chosen as they looked good
-                : Mathf.Lerp(_bodyRestHeight, 0.2f, -deltaBodyHeightLerpValue); // Should probably move them to fields
+            float blendT = (1 + leftTrigger - rightTrigger) * 0.5f;
 
+            // Calculate the target height by blending two clip controllers based on the triggers
+            float targetHeight = ClipController.BlendControllerEvaluations(_clipControllerHigh, _clipControllerLow,
+                ClipController.EvaluationType.CATMULL_ROM, blendT);
+            
+            // Calculate the body's height
             _bodyHeight = Mathf.MoveTowards(_bodyHeight, targetHeight, changeHeightSpeed * Time.deltaTime);
 
+            // Calculate the bodies position based on the bodies height
             body.localPosition = Vector3.up * _bodyHeight;
 
             #endregion
+
+            #region Body Rotation
+
+            transform.rotation.Normalize();
+
+            // Create rays originating from the body
+            Vector3 pos = transform.position + transform.up * 0.3f;
+            Ray rayDown = new Ray(pos, -transform.up);
+            Vector3 moveDirection = transform.forward * _moveSpeedParameter;
+
+            Ray rayGroundInFront = new Ray(pos, -transform.up + moveDirection * 0.5f);
+
+            // Create a copy of the current rotation
+            Quaternion targetRot = transform.rotation;
+
+            if (Physics.Raycast(rayDown, out RaycastHit hit, 1f))
+            {
+                // Adjust the position of the Crawler to the raycast
+                transform.position = hit.point;
+                if (Physics.Raycast(rayGroundInFront, out RaycastHit hitDown))
+                {
+                    hit = hitDown;
+                }
+
+                // Calculate an up, right, and forward axis based of the raycast hit's surface
+                Vector3 hitUp = hit.normal.normalized;
+                Vector3 hitRight = Vector3.Cross(hitUp, transform.forward).normalized;
+                Vector3 hitForward = Vector3.Cross(hitRight, hitUp).normalized;
+
+                // Render new axis for debugging
+                Debug.DrawRay(hit.point, hitRight, Color.red);
+                Debug.DrawRay(hit.point, hitUp, Color.green);
+                Debug.DrawRay(hit.point, hitForward, Color.blue);
+
+                // Render the current 3 axis for debugging
+                Debug.DrawRay(hit.point, transform.right, Color.magenta);
+                Debug.DrawRay(hit.point, transform.up, Color.yellow);
+                Debug.DrawRay(hit.point, transform.forward, Color.cyan);
+
+                // Calculate a quaternion from a right up and forward axis
+                targetRot = MathAA.GetRotationFromThreeAxis(hitRight, hitUp, hitForward);
+            }
+
+            float rotateStep = Mathf.Abs(_moveSpeedParameter) * maxTurnSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotateStep);
+
+            #endregion
+        }
+
+        private void LateUpdate()
+        {
+            
 
             #region HandleIK
 

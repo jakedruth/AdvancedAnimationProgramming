@@ -6251,6 +6251,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 207803399647823939, guid: 10fdd1d61164e5341b824a74ad7d1c92,
+        type: 3}
+      propertyPath: heightBobDuration
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3144851597764102443, guid: 10fdd1d61164e5341b824a74ad7d1c92,
         type: 3}
       propertyPath: m_LocalPosition.z
