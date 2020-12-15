@@ -9,9 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
-using Unity.Profiling;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 
 namespace AdvAnimation
