@@ -32,17 +32,16 @@ namespace AdvAnimation
         {
             // Find the position above the ground that the tail can rest at
             Ray ray = new Ray(restTransform.position + restTransform.up, -restTransform.up);
-            float debugHitDistance = 2;
             Vector3 pos = restTransform.position;
             Quaternion targetRot = locator.rotation;
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            bool rayHit = Physics.Raycast(ray, out RaycastHit hit);
+            if (rayHit)
             {
-                debugHitDistance = hit.distance;
                 pos = hit.point - ray.direction * _height;
                 targetRot = MathAA.GetRotationFromRaycastHitAndForward(hit, restTransform.forward);
             }
 
-            Debug.DrawLine(ray.origin, ray.GetPoint(debugHitDistance), Color.red);
+            //Debug.DrawLine(ray.origin, ray.GetPoint(rayHit ? hit.distance : 2f), Color.red);
 
             // move the locator 
             locator.position = Vector3.MoveTowards(locator.position, pos, 1.0f * Time.deltaTime);

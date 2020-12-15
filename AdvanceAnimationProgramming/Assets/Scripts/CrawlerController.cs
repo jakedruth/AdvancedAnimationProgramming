@@ -91,7 +91,7 @@ namespace AdvAnimation
             // Get Controller Inputs
             GamepadState current = GamePad.GetState(GamePad.Index.Any, true);
             Vector3 rawLeftStick = new Vector3(current.LeftStickAxis.x, 0, current.LeftStickAxis.y);
-            Vector3 rawRightStick = new Vector3(current.RightStickAxis.x, 0, current.RightStickAxis.y);
+            //Vector3 rawRightStick = new Vector3(current.RightStickAxis.x, 0, current.RightStickAxis.y);
             float leftTrigger = current.LeftTrigger;
             float rightTrigger = current.RightTrigger;
 
